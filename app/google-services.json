@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "259018534537",
+    "project_id": "delivery-80a18",
+    "storage_bucket": "delivery-80a18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259018534537:android:180d48c6510047eed6a058",
+        "android_client_info": {
+          "package_name": "com.samar.delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3FQNd1S_463HTW59-IH9JPo31kg8gu8w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

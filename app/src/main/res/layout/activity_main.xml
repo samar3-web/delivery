@@ -9,7 +9,7 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="200dp"
         app:lottie_fileName="delivery_screen.json"
         app:lottie_loop="true"
         android:layout_marginTop="100dp"
@@ -65,10 +65,13 @@
             android:onClick="viewForgotPAssword"
             android:layout_marginTop="10dp"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cirLoginButton"
-            style="@style/loginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="30dp"
             android:text="Login"
+            android:backgroundTint="@color/primaryTextColor"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/loginViewsMargin"/>
 

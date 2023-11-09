@@ -122,7 +122,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="start">
+                        >
 
                         <View
                             android:layout_width="2dp"
@@ -130,15 +130,19 @@
                             android:background="#1F5BF3"
                             android:layout_marginTop="0dp"
                             android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <include layout="@layout/tache_cardview" />
 
-                        <GridView
-                            android:id="@+id/id"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:horizontalSpacing="6dp"
-                            android:numColumns="1"
-                            android:verticalSpacing="6dp"
-                            android:layout_marginStart="8dp" /> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
+                        <include layout="@layout/tache_cardview" />
+
+                        <include layout="@layout/tache_cardview" />
+                    </LinearLayout>
+
+
+                        <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
                     </LinearLayout>
                 </ScrollView>
                 <!-- Deuxième LinearLayout -->
@@ -181,14 +185,16 @@
                             android:layout_marginTop="0dp"
                             android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
 
-                        <GridView
-                            android:id="@+id/id"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:horizontalSpacing="6dp"
-                            android:numColumns="1"
-                            android:verticalSpacing="6dp"
-                            android:layout_marginStart="8dp" /> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <include layout="@layout/tache_cardview" />
+
+                            <include layout="@layout/tache_cardview" />
+
+                            <include layout="@layout/tache_cardview" />
+                        </LinearLayout> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
                     </LinearLayout>
                 </ScrollView>
                 <LinearLayout
@@ -236,14 +242,13 @@
                             android:layout_marginTop="0dp"
                             android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
 
-                        <GridView
-
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:horizontalSpacing="6dp"
-                            android:numColumns="1"
-                            android:verticalSpacing="6dp"
-                            android:layout_marginStart="8dp" /> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <include layout="@layout/tache_cardview" />
+                        </LinearLayout><!-- Ajustez la marge de gauche pour rapprocher le GridView -->
                     </LinearLayout>
                 </ScrollView>
                 <LinearLayout

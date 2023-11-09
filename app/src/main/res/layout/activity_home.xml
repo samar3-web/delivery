@@ -101,7 +101,8 @@
                         android:layout_width="79dp"
                         android:layout_height="74dp"
                         android:layout_marginLeft="15dp"
-                        android:src="@drawable/img_4"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/img_2"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -138,7 +139,6 @@
 
                         <include layout="@layout/tache_cardview" />
 
-                        <include layout="@layout/tache_cardview" />
                     </LinearLayout>
 
 
@@ -150,11 +150,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <ImageButton
                         android:layout_width="79dp"
                         android:layout_height="74dp"
                         android:layout_marginLeft="15dp"
-                        android:src="@drawable/img_5"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/img_3"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -189,11 +191,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-                            <include layout="@layout/tache_cardview" />
 
-                            <include layout="@layout/tache_cardview" />
+                            <include layout="@layout/tache_encours_cardview" />
 
-                            <include layout="@layout/tache_cardview" />
+                            <include layout="@layout/tache_encours_cardview" />
                         </LinearLayout> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
                     </LinearLayout>
                 </ScrollView>
@@ -208,11 +209,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
+
                     <ImageButton
                         android:layout_width="79dp"
                         android:layout_height="74dp"
                         android:layout_marginLeft="15dp"
-                        android:src="@drawable/img_6"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/img_8"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -247,7 +250,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
-                            <include layout="@layout/tache_cardview" />
+                            <include layout="@layout/tache_livre_cardview" />
                         </LinearLayout><!-- Ajustez la marge de gauche pour rapprocher le GridView -->
                     </LinearLayout>
                 </ScrollView>
@@ -260,31 +263,7 @@
             </LinearLayout>
 
 
-        </LinearLayout>
+        </LinearLayout
     </ScrollView>
-    <!--
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="0dp"
-        android:layout_height="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-        <com.google.android.material.bottomappbar.BottomAppBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:id="@+id/bottomAppBar"
-            app:fabCradleMargin="10dp"
-            app:fabCradleRoundedCornerRadius="10dp"
-            app:fabCradleVerticalOffset="10dp"
-            tools:ignore="BottomAppBar">
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/bottomNavigationView"
-                app:menu="@menu/bottomnavbar_items"
-                android:layout_marginRight="20dp"
-                />
-        </com.google.android.material.bottomappbar.BottomAppBar>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout> -->
+
 </androidx.constraintlayout.widget.ConstraintLayout>

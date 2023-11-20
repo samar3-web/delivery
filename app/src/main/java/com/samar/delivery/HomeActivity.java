@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
+    RecyclerView my_rcv;
 
     private RecyclerView recyclerViewToDo, recyclerViewInProgress, recyclerViewDelivered;
     private TaskAdapter toDoAdapter, inProgressAdapter, deliveredAdapter;
@@ -44,9 +46,10 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
-        recyclerViewInProgress = findViewById(R.id.recyclerViewInProgress);
-        recyclerViewDelivered = findViewById(R.id.recyclerViewDelivered);
+        //recyclerViewInProgress = findViewById(R.id.recyclerViewInProgress);
+        //recyclerViewDelivered = findViewById(R.id.recyclerViewDelivered);
 
+        my_rcv = findViewById(R.id.recyclerViewToDo);
 
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -57,7 +60,7 @@ public class HomeActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("tasksCollection");
 
 
-        setupRecyclerView();
+        //setupRecyclerView();
         loadData();
     }
     private void setupRecyclerView() {
@@ -143,6 +146,7 @@ public class HomeActivity extends AppCompatActivity {
 
                                     tasks.add(task1);
 
+                                toDoAdapter = new TaskAdapter(HomeActivity.this, tasks, R.layout.tache_cardview);
 
                                 // Ajuster l'adaptateur et le gestionnaire de disposition de la recyclerViewToDo existante
                                 recyclerViewToDo.setAdapter(toDoAdapter);

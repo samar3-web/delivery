@@ -118,11 +118,13 @@
                 </LinearLayout>
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    >
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+
                         >
 
                         <View
@@ -131,151 +133,19 @@
                             android:background="#1F5BF3"
                             android:layout_marginTop="0dp"
                             android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/recyclerViewToDo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            android:layout_above="@+id/recyclerViewInProgress"/>
-
-                    </LinearLayout>
-
-
-                        <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
+                            android:layout_marginBottom="-80dp"
+                           />
                     </LinearLayout>
                 </ScrollView>
                 <!-- Deuxième LinearLayout -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="74dp"
-                        android:layout_marginLeft="15dp"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/img_3"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20dp"
-                        android:textColor="@color/text"
-                        android:textSize="18sp"
-                        android:text="En cours" />
-
-                </LinearLayout>
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="start">
-
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="160dp"
-                            android:background="#1F5BF3"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <!-- RecyclerView pour les tâches en cours -->
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerViewInProgress"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:layout_below="@+id/recyclerViewToDo"
-                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                android:layout_above="@+id/recyclerViewDelivered"/>
-                        </LinearLayout> <!-- Ajustez la marge de gauche pour rapprocher le GridView -->
-                    </LinearLayout>
-                </ScrollView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <!-- Contenu du premier LinearLayout -->
-                </LinearLayout>
                 <!-- Troisième LinearLayout -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
 
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="74dp"
-                        android:layout_marginLeft="15dp"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/img_8"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20dp"
-                        android:textColor="@color/text"
-                        android:textSize="18sp"
-                        android:text="Livré" />
-                </LinearLayout>
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="start">
-
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="160dp"
-                            android:background="#1F5BF3"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <!-- RecyclerView pour les tâches livrées -->
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerViewDelivered"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:layout_below="@+id/recyclerViewInProgress"
-                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-                        </LinearLayout><!-- Ajustez la marge de gauche pour rapprocher le GridView -->
-                    </LinearLayout>
-                </ScrollView>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                </LinearLayout>
             </LinearLayout>
 
 

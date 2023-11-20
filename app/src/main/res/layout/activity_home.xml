@@ -1,155 +1,323 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="#F4FAFF"
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <ScrollView
+    <RelativeLayout
+        android:id="@+id/handlee"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/blue"
+        android:orientation="horizontal"
+        android:elevation="5dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                app:cardCornerRadius="12dp">
+
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/logo" />
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12sp"
+                android:text="Delivery : Track your tasks"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/logout_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="end"
+            android:layout_marginEnd="25dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/profile"
+            app:civ_border_color="@android:color/white"
+            app:civ_border_width="2dp" />
+
+
+    </RelativeLayout>
+
+
+    <!-- <LinearLayout
+         android:id="@+id/frag_container_nav"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_above="@id/bottom_nav_bar"
+         android:layout_below="@id/handlee"
+         android:orientation="horizontal">
+
+
+     </LinearLayout>-->
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="27dp"
-        tools:layout_editor_absoluteY="156dp">
-
+        android:orientation="vertical"
+        android:layout_above="@id/bottom_nav_bar"
+        android:layout_below="@id/handlee">
+        <!-- Premier LinearLayout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            >
+
+            <ImageButton
+                android:layout_width="79dp"
+                android:layout_height="74dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/img_2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/text"
+                android:textSize="18sp"
+                android:text="A faire" />
+        </LinearLayout>
+        <ListView
+            android:id="@+id/timeline_listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="0dp" />
+        <!--<ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@drawable/rect"
-                android:orientation="vertical">
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Shippy"
-                        android:textColor="@color/gris"
-                        android:textSize="25sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintVertical_bias="0.5"
-                        app:layout_constraintHorizontal_bias="0.5" />
-                    <ImageView
-                        android:id="@+id/menu"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="30dp"
-                        android:src="@drawable/img"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/profileIv"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="32dp"
-                        android:layout_marginRight="20dp"
-                        android:src="@drawable/baseline_person_24"
-                        app:civ_border_color="@color/colorAccent"
-                        app:civ_border_width="1dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="4dp">
 
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
+                >
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="160dp"
+                    android:background="#1F5BF3"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginStart="50dp" /> &lt;!&ndash; Ajustez la marge de gauche pour rapprocher la vue &ndash;&gt;
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewToDo"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="18dp"
-                    android:text="Aujourd'hui , 9 Novembre 2023"
-                    android:textColor="@color/text"
-                    android:textSize="24sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="-80dp"
+                    />
             </LinearLayout>
+        </ScrollView>-->
+        <!-- Deuxième LinearLayout -->
+        <!-- Troisième LinearLayout -->
+
+    </LinearLayout>
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="#fff"
+        android:backgroundTint="#3a67ff"
+        android:fadingEdge="horizontal"
+        app:cnb_menuResource="@menu/menu"
+        app:cnb_unselectedColor="@android:color/white" />
+
+
+</RelativeLayout>
+    <!--
+    <?xml version="1.0" encoding="utf-8"?>
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".HomeActivity">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout_editor_absoluteX="27dp"
+            tools:layout_editor_absoluteY="156dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <!-- Premier LinearLayout -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
+                    android:layout_height="100dp"
+                    android:background="@drawable/rect"
+                    android:orientation="vertical">
 
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="74dp"
-                        android:layout_marginLeft="15dp"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/img_2"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Shippy"
+                            android:textColor="@color/gris"
+                            android:textSize="25sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintVertical_bias="0.5"
+                            app:layout_constraintHorizontal_bias="0.5" />
+                        <ImageView
+                            android:id="@+id/menu"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginLeft="30dp"
+                            android:src="@drawable/img"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"/>
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/profileIv"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginTop="32dp"
+                            android:layout_marginRight="20dp"
+                            android:src="@drawable/baseline_person_24"
+                            app:civ_border_color="@color/colorAccent"
+                            app:civ_border_width="1dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="18dp"
+                        android:text="Aujourd'hui , 9 Novembre 2023"
+                        android:textColor="@color/text"
+                        android:textSize="24sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20dp"
-                        android:textColor="@color/text"
-                        android:textSize="18sp"
-                        android:text="A faire" />
                 </LinearLayout>
-                <ScrollView
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    &lt;!&ndash; Premier LinearLayout &ndash;&gt;
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-
                         >
 
-                        <View
-                            android:layout_width="2dp"
-                            android:layout_height="160dp"
-                            android:background="#1F5BF3"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginStart="50dp" /> <!-- Ajustez la marge de gauche pour rapprocher la vue -->
+                        <ImageButton
+                            android:layout_width="79dp"
+                            android:layout_height="74dp"
+                            android:layout_marginLeft="15dp"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/img_2"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerViewToDo"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="20dp"
+                            android:textColor="@color/text"
+                            android:textSize="18sp"
+                            android:text="A faire" />
+                    </LinearLayout>
+                    <ScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        >
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginBottom="-80dp"
-                           />
-                    </LinearLayout>
-                </ScrollView>
-                <!-- Deuxième LinearLayout -->
-                <!-- Troisième LinearLayout -->
+                            android:orientation="horizontal"
+
+                            >
+
+                            <View
+                                android:layout_width="2dp"
+                                android:layout_height="160dp"
+                                android:background="#1F5BF3"
+                                android:layout_marginTop="0dp"
+                                android:layout_marginStart="50dp" /> &lt;!&ndash; Ajustez la marge de gauche pour rapprocher la vue &ndash;&gt;
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerViewToDo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginBottom="-80dp"
+                               />
+                        </LinearLayout>
+                    </ScrollView>
+                    &lt;!&ndash; Deuxième LinearLayout &ndash;&gt;
+                    &lt;!&ndash; Troisième LinearLayout &ndash;&gt;
+
+                </LinearLayout>
+
 
             </LinearLayout>
+        </ScrollView>
 
-
-        </LinearLayout>
-    </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>-->

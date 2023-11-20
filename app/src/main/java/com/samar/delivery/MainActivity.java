@@ -25,6 +25,16 @@ public class MainActivity extends AppCompatActivity {
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
 
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser != null) {
+
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
+            Toast.makeText(getApplicationContext(), currentUser.getEmail() + " is connected", Toast.LENGTH_LONG).show();
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+            finish();
+        }
+
         emailEditText = findViewById(R.id.editTextEmail);
         passwordEditText = findViewById(R.id.editTextPassword);
         signInButton = findViewById(R.id.cirLoginButton);

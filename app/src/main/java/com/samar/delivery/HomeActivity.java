@@ -7,9 +7,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,7 +36,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.samar.delivery.Adapter.TaskAdapter;
 
+import org.qap.ctimelineview.TimelineRow;
+import org.qap.ctimelineview.TimelineViewAdapter;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
@@ -45,11 +57,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
+       // recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
+
+
         //recyclerViewInProgress = findViewById(R.id.recyclerViewInProgress);
         //recyclerViewDelivered = findViewById(R.id.recyclerViewDelivered);
 
-        my_rcv = findViewById(R.id.recyclerViewToDo);
+      //  my_rcv = findViewById(R.id.recyclerViewToDo);
 
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -61,7 +75,83 @@ public class HomeActivity extends AppCompatActivity {
 
 
         //setupRecyclerView();
-        loadData();
+
+        //loadData();
+
+        /*logout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getContext())
+                        .setMessage("Are you sure you want to logout from the application?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                FirebaseAuth.getInstance().signOut();
+                                getActivity().finish();
+                                Toast.makeText(getActivity(), "Logging Out", Toast.LENGTH_SHORT).show();
+
+                                // Start LoginActivity with transition animation
+                                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                                startActivity(intent);
+                                getActivity().overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            }
+        });*/
+        // Create Timeline rows List
+        ArrayList<TimelineRow> timelineRowsList = new ArrayList<>();
+
+// Create new timeline row (Row Id)
+        TimelineRow myRow = new TimelineRow(0);
+
+// To set the row Date (optional)
+        myRow.setDate(new Date());
+// To set the row Title (optional)
+        myRow.setTitle("Title");
+// To set the row Description (optional)
+        myRow.setDescription("Description");
+// To set the row bitmap image (optional)
+        myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
+// To set row Below Line Color (optional)
+        myRow.setBellowLineColor(Color.argb(255, 0, 0, 100));
+// To set row Below Line Size in dp (optional)
+        myRow.setBellowLineSize(6);
+// To set row Image Size in dp (optional)
+        myRow.setImageSize(40);
+// To set background color of the row image (optional)
+        myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+// To set the Background Size of the row image in dp (optional)
+        myRow.setBackgroundSize(60);
+// To set row Date text color (optional)
+        myRow.setDateColor(Color.argb(255, 0, 0, 0));
+// To set row Title text color (optional)
+        myRow.setTitleColor(Color.argb(255, 0, 0, 0));
+// To set row Description text color (optional)
+        myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
+
+// Add the new row to the list
+        timelineRowsList.add(myRow);
+        timelineRowsList.add(myRow);
+        timelineRowsList.add(myRow);
+
+// Create the Timeline Adapter
+        ArrayAdapter<TimelineRow> myAdapter = new TimelineViewAdapter(this, 0, timelineRowsList,
+                //if true, list will be sorted by date
+                false);
+
+// Get the ListView and Bind it with the Timeline Adapter
+        ListView myListView = (ListView) findViewById(R.id.timeline_listView);
+        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the item that was clicked
+                TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
+                Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        myListView.setAdapter(myAdapter);
     }
     private void setupRecyclerView() {
         recyclerViewToDo.setLayoutManager(new LinearLayoutManager(this));

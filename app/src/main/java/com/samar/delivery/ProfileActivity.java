@@ -38,6 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -129,7 +130,7 @@ public class ProfileActivity extends AppCompatActivity {
         Logout = findViewById(R.id.logout);
         editname = findViewById(R.id.editName);
 
-        UserProfileImagesRef = FirebaseStorage.getInstance ().getReference ().child ( "Profilee Images" );
+        UserProfileImagesRef = FirebaseStorage.getInstance ().getReference ().child ( "USERS_IMAGES" );
 
         // Button for adding profile pic
         profilePicButton = (ImageButton) findViewById(R.id.profile_pic_button);
@@ -337,8 +338,9 @@ public class ProfileActivity extends AppCompatActivity {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String currentDateTime = dateFormat.format(new Date());
+      //  currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
-        StorageReference storageReference = UserProfileImagesRef.child ( FirebaseAuth.getInstance().getUid() + "_" + currentDateTime + ".jpg");
+        StorageReference storageReference = UserProfileImagesRef.child ( FirebaseAuth.getInstance().getCurrentUser().getEmail() + "_" + currentDateTime + ".jpg");
 
         showProgressDialog();
 
@@ -357,9 +359,24 @@ public class ProfileActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
                             if (task.isSuccessful()) {
+
+                                FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+                                currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+
+                                DocumentReference documentReference = firebaseFirestore.collection("USERDATA").document(currentUserEmail);
+
+                              //  documentReference.
+
+
                                 // Setting the image url as the user_image property of the user in the database
                                 String pfpUrl = task.getResult().toString();
-                                reference.child(userID).child("user_image").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                                documentReference.update("profileUrl", pfpUrl);
+                                progressDialog.dismiss();
+                            //    reference.child(userID).child("profileUrl").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                               /* reference.child(userID).child("profileUrl").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         progressDialog.dismiss();
@@ -369,7 +386,7 @@ public class ProfileActivity extends AppCompatActivity {
                                             Toast.makeText(ProfileActivity.this, "Failed to update profile picture", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-                                });
+                                });*/
                             } else {
                                 progressDialog.dismiss();
                                 Toast.makeText(ProfileActivity.this, "Failed to update profile picture", Toast.LENGTH_SHORT).show();

@@ -38,6 +38,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.samar.delivery.Adapter.TaskAdapter;
+import com.squareup.picasso.Picasso;
 
 import org.qap.ctimelineview.TimelineRow;
 import org.qap.ctimelineview.TimelineViewAdapter;
@@ -45,6 +46,7 @@ import org.qap.ctimelineview.TimelineViewAdapter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     RecyclerView my_rcv;
@@ -57,6 +59,8 @@ public class HomeActivity extends AppCompatActivity {
     ImageView profile_button;
 
     List<com.samar.delivery.models.Task> tasks;
+    private String currentUserEmail;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        //RetriveUserImage();
+        RetriveUserImage();
 
        // recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
 
@@ -288,24 +292,34 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
- /*   private void RetriveUserImage() {
+    private void RetriveUserImage() {
         // Getting profile picture to set in the profile button
-        FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+        currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        firebaseFirestore.collection("USERDATA").document(currentUserEmail).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Object pfpUrl = snapshot.child("user_image").getValue();
-                if(pfpUrl != null)
-                {
-                    Picasso.get().load(pfpUrl.toString()).placeholder(R.drawable.profile).error(R.drawable.profile).into(profile_button);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    Map<String, Object> snapshot = task.getResult().getData();
+                    try {
+                        if (snapshot.get("profileUrl").toString() != "") {
+                            // If the url is not null, then adding the image
+                            Picasso.get().load(snapshot.get("profileUrl").toString()).placeholder(R.drawable.profile).error(R.drawable.profile).into(profile_button);
+                        }
+                    } catch (Exception e) {
+                        Log.d("xxxxxxx", "onComplete Exception in setting data to profile : " + e.getLocalizedMessage());
+                    }
                 }
             }
-
+        }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onFailure(Exception e) {
+                Log.d("xxxx", "onFailure: " + e.getLocalizedMessage());
             }
         });
-    }*/
+     
+    }
     /*private void bottomMenu() {
         chipNavigationBar.setOnItemSelectedListener
                 (new ChipNavigationBar.OnItemSelectedListener() {

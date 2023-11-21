@@ -176,6 +176,9 @@ public class HomeActivity extends AppCompatActivity {
                 // Get the item that was clicked
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
+                startActivity(intent);
+                finish();
             }
         });
         myListView.setAdapter(myAdapter);

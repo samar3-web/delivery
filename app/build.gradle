@@ -45,6 +45,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.airbnb.android:lottie:4.2.2'
 
+    // Pie chart and graph view
+    implementation 'com.github.blackfizz:eazegraph:1.2.2@aar'
+    implementation 'com.nineoldandroids:library:2.4.0'
+
+    // Calendar View Dependency
+    implementation 'sun.bob:mcalendarview:1.0.0'
+
+    implementation 'com.itextpdf:itextpdf:5.5.13'
 
     //Bottom navigation bar Library
     implementation 'com.ismaeldivita.chipnavigation:chip-navigation-bar:1.3.4'

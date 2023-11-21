@@ -298,6 +298,7 @@ public class HomeActivity extends AppCompatActivity {
 
         currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         firebaseFirestore.collection("USERDATA").document(currentUserEmail).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -347,4 +348,10 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 });
     }*/
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        RetriveUserImage();
+    }
 }

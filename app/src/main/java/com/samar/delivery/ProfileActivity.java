@@ -83,6 +83,8 @@ public class ProfileActivity extends AppCompatActivity {
     String fileName;
     File pdf;
     private String currentUserEmail;
+    private FirebaseFirestore firebaseFirestore;
+    private DocumentReference documentReference;
     //private LovelySaveStateHandler saveStateHandler;
 
     @Override
@@ -148,14 +150,17 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d("aaaaaaaaaaaaaaaa : Rootref","Rootref : "+Rootref);
         reference = FirebaseDatabase.getInstance().getReference("USERDATA");
 
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
+        currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        documentReference = firebaseFirestore.collection("USERDATA").document(currentUserEmail);
+
      //   tillActive = FirebaseDatabase.getInstance ().getReference ().child("Users").child(userID).child("Goals").child("Active");
     }
 
     private void getUserDatafromFirebase() {
         showProgressDialog();
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
-        currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
         firebaseFirestore.collection("USERDATA").document(currentUserEmail).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 
@@ -360,12 +365,10 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Uri> task) {
                             if (task.isSuccessful()) {
 
-                                FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-
-                                currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
 
-                                DocumentReference documentReference = firebaseFirestore.collection("USERDATA").document(currentUserEmail);
+
+
 
                               //  documentReference.
 
@@ -419,7 +422,11 @@ public class ProfileActivity extends AppCompatActivity {
                 .setConfirmButton(android.R.string.ok, new LovelyTextInputDialog.OnTextInputConfirmListener() {
                     @Override
                     public void onTextInputConfirmed(String text) {
-                        reference.child(userID).child("name").setValue(text); //calling child and setting
+
+
+
+
+                        documentReference.update("name", text);
                         welcome1.setText(text);
                     }
                 })

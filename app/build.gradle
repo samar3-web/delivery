@@ -50,4 +50,10 @@ dependencies {
     implementation 'com.ismaeldivita.chipnavigation:chip-navigation-bar:1.3.4'
 
     implementation 'com.github.qapqap:TimelineView:v1.6'
+
+    //Picasso for Image View in Recycler View
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //CustomDialog
+    implementation 'com.yarolegovich:lovely-dialog:1.1.1'
 }

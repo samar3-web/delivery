@@ -4,6 +4,7 @@ import static android.app.PendingIntent.getActivity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -34,6 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.samar.delivery.Adapter.TaskAdapter;
 
 import org.qap.ctimelineview.TimelineRow;
@@ -50,12 +53,32 @@ public class HomeActivity extends AppCompatActivity {
     private TaskAdapter toDoAdapter, inProgressAdapter, deliveredAdapter;
     private DatabaseReference databaseReference;
     private FirebaseAuth firebaseAuth;
+    ChipNavigationBar chipNavigationBar;
+    ImageView profile_button;
 
     List<com.samar.delivery.models.Task> tasks;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        chipNavigationBar = findViewById(R.id.bottom_nav_bar);
+        chipNavigationBar.setItemSelected(R.id.nav_home,
+                true);
+        profile_button = findViewById(R.id.logout_btn);
+
+       // bottomMenu();
+        profile_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent ProfileIntent = new Intent ( HomeActivity.this,ProfileActivity.class );
+                startActivity ( ProfileIntent );
+
+            }
+        });
+
+        //RetriveUserImage();
 
        // recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
 
@@ -265,4 +288,49 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
+ /*   private void RetriveUserImage() {
+        // Getting profile picture to set in the profile button
+        FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Object pfpUrl = snapshot.child("user_image").getValue();
+                if(pfpUrl != null)
+                {
+                    Picasso.get().load(pfpUrl.toString()).placeholder(R.drawable.profile).error(R.drawable.profile).into(profile_button);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }*/
+    /*private void bottomMenu() {
+        chipNavigationBar.setOnItemSelectedListener
+                (new ChipNavigationBar.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(int i) {
+                        Fragment fragment = null;
+                        switch (i){
+                            case R.id.nav_home:
+                                fragment = new ActiveGoalFragment();
+                                break;
+                            case R.id.nav_new_archive:
+                                fragment = new ArchiveGoalFragment();
+                                break;
+                            case R.id.nav_new_ranking:
+                                fragment = new RankFragment();
+                                break;
+                            case R.id.nav_settings:
+                                fragment = new SettingsFragment();
+                                break;
+                        }
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frag_container_nav,
+                                        fragment).commit();
+
+                    }
+                });
+    }*/
 }

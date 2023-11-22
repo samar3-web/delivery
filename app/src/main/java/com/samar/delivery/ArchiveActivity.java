@@ -1,57 +1,31 @@
 package com.samar.delivery;
 
-import static android.app.PendingIntent.getActivity;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.transition.TransitionSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.rd.PageIndicatorView;
-import com.rd.animation.type.AnimationType;
-import com.samar.delivery.Adapter.TaskAdapter;
 import com.squareup.picasso.Picasso;
 
 import org.qap.ctimelineview.TimelineRow;
@@ -64,142 +38,40 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class HomeActivity extends AppCompatActivity {
-    RecyclerView my_rcv;
+public class ArchiveActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerViewToDo, recyclerViewInProgress, recyclerViewDelivered;
-    private TaskAdapter toDoAdapter, inProgressAdapter, deliveredAdapter;
-    private DatabaseReference databaseReference;
-    private FirebaseAuth firebaseAuth;
-    ChipNavigationBar chipNavigationBar;
+    private ChipNavigationBar chipNavigationBar;
     ImageView profile_button;
-    ArrayList<TimelineRow> timelineRowsList,timelineRowsList1;
-
-    List<com.samar.delivery.models.Task> tasks;
+    private ListView myListViewDone;
+    private FirebaseAuth firebaseAuth;
+    private ArrayList<TimelineRow> timelineRowsListDone;
+    private DatabaseReference databaseReference;
+    private List<com.samar.delivery.models.Task> tasks;
+    private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
-    ArrayAdapter<TimelineRow> myAdapter,myAdapter1;
-    private ListView myListView,myListView1;
-    private LinearLayout linearLayout1, linearLayout2;
-    private GestureDetector gestureDetector;
-    private PageIndicatorView pageIndicatorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_archive);
 
         Window window = getWindow();
         window.setNavigationBarColor(Color.parseColor("#3a67ff"));
 
-
-        linearLayout1 = findViewById(R.id.linearLayout1);
-        linearLayout2 = findViewById(R.id.linearLayout2);
-         pageIndicatorView = findViewById(R.id.pageIndicatorView);
-        pageIndicatorView.setCount(2); // specify total count of indicators
-        pageIndicatorView.clearSelection();
-        pageIndicatorView.setSelection(0);
-
-        pageIndicatorView.setAnimationType(AnimationType.WORM);
-
-        linearLayout1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    startX = event.getX();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    endX = event.getX();
-
-                    float deltaX = endX - startX;
-                    Log.d("lllllllllll11111111111","deltaX :"+deltaX+" yyyyy "+pageIndicatorView.getSelection());
-
-                    if (deltaX < 0) {
-                        // Swipe de gauche à droite
-                        linearLayout1.animate()
-                                .alpha(0.0f)
-                                .translationX(-linearLayout1.getWidth())
-                                .setDuration(1000)
-                                .start();
-                        Log.d("01","deltaX :"+deltaX);
-                        linearLayout2.animate()
-                                .alpha(1.0f)
-                                .translationX(0)
-                                .setDuration(1000)
-                                .start();
-                        Log.d("02","deltaX :"+deltaX);
-
-
-                        linearLayout1.setVisibility(View.GONE);
-                        linearLayout2.setVisibility(View.VISIBLE);
-                        pageIndicatorView.clearSelection();
-                        pageIndicatorView.setSelection(1);
-                    }
-                }
-
-                return true;
-            }
-
-            private float startX;
-            private float endX;
-        });
-        linearLayout2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    startX = event.getX();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    endX = event.getX();
-
-                    float deltaX = endX - startX;
-                    Log.d("lllllllllll2222222222","deltaX :"+deltaX+" yyyyy ");
-                    if (deltaX > 0)  {
-                        // Swipe de droite à gauche
-                        linearLayout2.animate()
-                                .alpha(0.0f)
-                                .translationX(linearLayout2.getWidth())
-                                .setDuration(1000)
-                                .start();
-                        Log.d("07","deltaX :"+deltaX);
-
-                        linearLayout1.animate()
-                                .alpha(1.0f)
-                                .translationX(0)
-                                .setDuration(1000)
-                                .start();
-                        Log.d("08","deltaX :"+deltaX);
-                        linearLayout2.setVisibility(View.GONE);
-                        linearLayout1.setVisibility(View.VISIBLE);
-                        pageIndicatorView.clearSelection();
-                        pageIndicatorView.setSelection(0);
-                    }
-                }
-
-                return true;
-            }
-
-            private float startX;
-            private float endX;
-        });
-
-       /* // Initialiser la visibilité des LinearLayout
-        linearLayout1.setVisibility(View.VISIBLE);
-        linearLayout2.setVisibility(View.GONE);*/
-
         chipNavigationBar = findViewById(R.id.bottom_nav_bar);
-        chipNavigationBar.setItemSelected(R.id.nav_home,
+        chipNavigationBar.setItemSelected(R.id.nav_new_archive,
                 true);
         profile_button = findViewById(R.id.logout_btn);
-     //   gestureDetector = new GestureDetector(this, new SwipeGestureDetector());
 
         // Get the ListView and Bind it with the Timeline Adapter
-        myListView = (ListView) findViewById(R.id.timeline_listView);
-        myListView1 = (ListView) findViewById(R.id.timeline_listView1);
+        myListViewDone = (ListView) findViewById(R.id.timeline_listViewDone);
 
         bottomMenu();
         profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent ProfileIntent = new Intent ( HomeActivity.this,ProfileActivity.class );
+                Intent ProfileIntent = new Intent ( ArchiveActivity.this,ProfileActivity.class );
                 startActivity ( ProfileIntent );
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
 
@@ -208,14 +80,6 @@ public class HomeActivity extends AppCompatActivity {
 
         RetriveUserImage();
 
-       // recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
-
-
-        //recyclerViewInProgress = findViewById(R.id.recyclerViewInProgress);
-        //recyclerViewDelivered = findViewById(R.id.recyclerViewDelivered);
-
-      //  my_rcv = findViewById(R.id.recyclerViewToDo);
-
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -223,59 +87,27 @@ public class HomeActivity extends AppCompatActivity {
         checkUserAuthentication();
 
         databaseReference = FirebaseDatabase.getInstance().getReference("tasksCollection");
-
-
-        //setupRecyclerView();
-
-
-// Create Timeline rows List
-        timelineRowsList = new ArrayList<>();
-        timelineRowsList1 = new ArrayList<>();
+        // Create Timeline rows List
+        timelineRowsListDone = new ArrayList<>();
         loadData();
 
-        Log.d("aaaaaaaaaaaaaaaa","timelineRowsList.size() : "+timelineRowsList.size());
+      
 // Create the Timeline Adapter
 
 
 
 
-        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        myListViewDone.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get the item that was clicked
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
-                Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
-                startActivity(intent);
-               // finish();
-            }
-        });
-        myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the item that was clicked
-                TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
-                Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
+                Toast.makeText(ArchiveActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ArchiveActivity.this,TaskDetail.class);
                 startActivity(intent);
                 // finish();
             }
         });
-
-    }
-    private void setupRecyclerView() {
-        recyclerViewToDo.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewInProgress.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewDelivered.setLayoutManager(new LinearLayoutManager(this));
-
-        toDoAdapter = new TaskAdapter(new ArrayList<>()); // Initialisation avec une liste vide
-        inProgressAdapter = new TaskAdapter(new ArrayList<>());
-        deliveredAdapter = new TaskAdapter(new ArrayList<>());
-
-
-        recyclerViewToDo.setAdapter(toDoAdapter);
-        recyclerViewInProgress.setAdapter(inProgressAdapter);
-        recyclerViewDelivered.setAdapter(deliveredAdapter);
     }
 
     private void loadData() {
@@ -341,8 +173,8 @@ public class HomeActivity extends AppCompatActivity {
                                     task1.setLibelle(doc.get("name").toString());
                                     task1.setDuree(doc.get("duree").toString());
                                     task1.setStatus((doc.get("status")).toString());*/
-                                    //task1.setHeureDateDebutReelle(doc.get("HeureDateDebutReelle").toString());
-                                    //task1.setHeureDateFinReelle(doc.get("setHeureDateFinReelle").toString());
+                                //task1.setHeureDateDebutReelle(doc.get("HeureDateDebutReelle").toString());
+                                //task1.setHeureDateFinReelle(doc.get("setHeureDateFinReelle").toString());
 // Create new timeline row (Row Id)
                                 TimelineRow myRow = new TimelineRow(0);
 
@@ -357,12 +189,12 @@ public class HomeActivity extends AppCompatActivity {
                                 }*/
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                                 try {
-                                   // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
+                                    // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
                                     String d = doc.get("heureDateDebutPrevu").toString()+":00";
 
                                     Date date = dateFormat.parse(d);
-                                    Date dateSymitric = calculateSymmetricDate(date);
-                                    myRow.setDate(dateSymitric);
+                                   // Date dateSymitric = calculateSymmetricDate(date);
+                                    myRow.setDate(date);
                                     myRow.setDateColor(Color.argb(255, 30, 100, 0));
                                 } catch (ParseException e) {
                                     throw new RuntimeException(e);
@@ -400,7 +232,7 @@ public class HomeActivity extends AppCompatActivity {
                                     default:
                                         System.out.println("Priorité non valide");
                                 }
-                               // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+                                // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
 // To set the Background Size of the row image in dp (optional)
                                 myRow.setBackgroundSize(40);
 // To set row Date text color (optional)
@@ -411,12 +243,9 @@ public class HomeActivity extends AppCompatActivity {
                                 myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
 
 // Add the new row to the list
-                                if(doc.get("status").toString().equals("à faire")){
-                                timelineRowsList.add(myRow);}
-                                else if(doc.get("status").toString().equals("en cours")){
-                                    timelineRowsList1.add(myRow);
-                                }
-                                Log.d("pppppppppppppp","timelineRowsList.size() : "+timelineRowsList.size());
+                                if(doc.get("status").toString().equals("faite")){
+                                    timelineRowsListDone.add(myRow);}
+
 
 
                                    /* tasks.add(task1);
@@ -427,14 +256,11 @@ public class HomeActivity extends AppCompatActivity {
                                 recyclerViewToDo.setAdapter(toDoAdapter);
                                 recyclerViewToDo.setLayoutManager(new LinearLayoutManager(HomeActivity.this));*/
                             }
-                            myAdapter = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsList,
+                            myAdapterDone = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsListDone,
                                     //if true, list will be sorted by date
                                     false);
-                            myListView.setAdapter(myAdapter);
-                            myAdapter1 = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsList1,
-                                    //if true, list will be sorted by date
-                                    false);
-                            myListView1.setAdapter(myAdapter1);
+                            myListViewDone.setAdapter(myAdapterDone);
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
@@ -486,27 +312,27 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("xxxx", "onFailure: " + e.getLocalizedMessage());
             }
         });
-     
+
     }
     private void bottomMenu() {
         chipNavigationBar.setOnItemSelectedListener
                 (new ChipNavigationBar.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(int i) {
-                      //  Fragment fragment = null;
+                        //  Fragment fragment = null;
                         switch (i){
                             case R.id.nav_home:
-                              //  fragment = new ActiveGoalFragment();
-                                break;
-                            case R.id.nav_new_archive:
-                                Intent ProfileIntent = new Intent ( HomeActivity.this,ArchiveActivity.class );
+                                Intent ProfileIntent = new Intent ( ArchiveActivity.this,HomeActivity.class );
                                 startActivity ( ProfileIntent );
                                 break;
+                            case R.id.nav_new_archive:
+
+                                break;
                             case R.id.nav_new_chat:
-                               // fragment = new RankFragment();
+                                // fragment = new RankFragment();
                                 break;
                             case R.id.nav_settings:
-                               // fragment = new SettingsFragment();
+                                // fragment = new SettingsFragment();
                                 break;
                         }
                        /* getSupportFragmentManager().beginTransaction()
@@ -521,7 +347,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         RetriveUserImage();
-     //   loadData();
+        //   loadData();
     }
 
 
@@ -534,7 +360,4 @@ public class HomeActivity extends AppCompatActivity {
 
         return new Date(symmetricTime);
     }
-
-    }
-
-
+}

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@color/white">
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"
@@ -30,23 +31,48 @@
         <TextView
             style="@style/headerTextPrimary"
             android:text="Login"
+            android:textSize="28sp"
             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
+        <com.google.android.material.textfield.TextInputLayout
 
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:textColorHint="@color/white"
+            android:foregroundTint="@color/white"
+            android:drawableTint="@color/white">
             <EditText
                 android:id="@+id/editTextEmail"
                 style="@style/modifiedEditText"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:hint="@string/login_email_hint"/>
+                android:hint="@string/login_email_hint"
+                android:backgroundTint="@color/primaryTextColor"
+                android:textColorHint="@color/white"
+                android:foregroundTint="@color/white"
+                android:drawableTint="@color/white"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
 
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:textColorHint="@color/white"
+            android:foregroundTint="@color/white"
+            android:drawableTint="@color/white">
             <EditText
                 android:id="@+id/editTextPassword"
                 style="@style/modifiedEditText"
                 android:hint="@string/login_password_hint"
                 android:maxLines="1"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                android:backgroundTint="@color/primaryTextColor"
+                android:textColorHint="@color/white"
+                android:foregroundTint="@color/white"
+                android:drawableTint="@color/white"/>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -55,7 +81,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
+            android:textSize="16sp"
             android:text="Login"
+            android:layout_margin="20dp"
+            android:paddingHorizontal="20dp"
             android:backgroundTint="@color/primaryTextColor"
             android:layout_gravity="center_horizontal"
            />

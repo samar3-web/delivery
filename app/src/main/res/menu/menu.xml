@@ -18,6 +18,11 @@
         android:icon="@drawable/baseline_chat_24"
         android:title="Chat"
         app:cnb_iconColor="#FFFFFF"/>
+    <item
+        android:id="@+id/nav_new_notif"
+        android:icon="@drawable/baseline_notifications_active_24"
+        android:title="Notifications"
+        app:cnb_iconColor="#FFFFFF"/>
 
     <item
         android:id="@+id/nav_settings"

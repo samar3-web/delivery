@@ -21,6 +21,7 @@ import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -82,6 +83,9 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout linearLayout1, linearLayout2;
     private GestureDetector gestureDetector;
     private PageIndicatorView pageIndicatorView;
+
+    private SparseArray<String> taskIdsMap = new SparseArray<>();
+    private SparseArray<String> taskIdsMap1 = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,7 +242,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
-        String currentTaskid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+       // String currentTaskid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -247,9 +251,11 @@ public class HomeActivity extends AppCompatActivity {
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
-                intent.putExtra("currentTaskid", currentTaskid);
+                // Retrieve the currentTaskId using the mapping
+                String currentTaskId = taskIdsMap.get(position);
+                intent.putExtra("currentTaskid", currentTaskId);
                 startActivity(intent);
-                Log.d("iiiiiiiiiiid",currentTaskid);
+                Log.d("iiiiiiiiiiid",currentTaskId);
 
                 // finish();
             }
@@ -262,9 +268,11 @@ public class HomeActivity extends AppCompatActivity {
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
-                intent.putExtra("currentTaskid", currentTaskid);
+                // Retrieve the currentTaskId using the mapping
+                String currentTaskId = taskIdsMap1.get(position);
+                intent.putExtra("currentTaskid", currentTaskId);
 
-                Log.d("iiiiiiiiiiid",currentTaskid);
+                Log.d("iiiiiiiiiiid",currentTaskId);
                 startActivity(intent);
                 // finish();
             }
@@ -300,6 +308,8 @@ public class HomeActivity extends AppCompatActivity {
                             tasks = new ArrayList<com.samar.delivery.models.Task>();
 
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+
+                                String currentTaskId = doc.getId();
 
 // Create new timeline row (Row Id)
                                 TimelineRow myRow = new TimelineRow(0);
@@ -363,9 +373,15 @@ public class HomeActivity extends AppCompatActivity {
 
 // Add the new row to the list
                                 if(doc.get("status").toString().equals("à faire")){
-                                timelineRowsList.add(myRow);}
+                                timelineRowsList.add(myRow);
+                                    // Map the currentTaskId to the position in the list
+                                    taskIdsMap.put(timelineRowsList.size() - 1, currentTaskId);
+                                }
                                 else if(doc.get("status").toString().equals("en cours")){
                                     timelineRowsList1.add(myRow);
+                                    // Map the currentTaskId to the position in the list
+                                    taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
+
                                 }
                                 Log.d("pppppppppppppp","timelineRowsList.size() : "+timelineRowsList.size());
 

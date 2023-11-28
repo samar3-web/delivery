@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -558,11 +559,58 @@ public class TaskDetail extends AppCompatActivity {
         });
     }
 */
-    private void RetriveData(String houseDocId) {
+    private void RetriveData(String taskDocId) {
 
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        firebaseFirestore.collection("tasksCollection").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        firebaseFirestore.collection("tasksCollection").document(taskDocId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.getId());
+                Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.get("name").toString());
+                if (documentSnapshot.get("name") != null)
+                    name.setText(documentSnapshot.get("name").toString());
+
+               /* if (documentSnapshot.exists()) {
+                    // Document exists, retrieve the data
+                    com.samar.delivery.models.Task data = documentSnapshot.toObject(com.samar.delivery.models.Task.class);
+                    Log.d("fffffffffffffffffffffffffff", "onComplete: of task data fetching " + data.getId());
+                    Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + data.getStatus());
+                  //  Log.d("iiiiiiiiiiiiiiiiii", "Task name : " + task.getResult().get("destinataire"));
+
+                    // Now 'data' contains the data from the document
+                    // Handle the data as needed
+                } else {
+                    // Document does not exist
+                    // Handle the case where the document does not exist
+                }*/
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Handle failures
+                Log.e("Firebase", "Error getting document", e);
+            }
+        });
+            /*    addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+                                                                                                            @Override
+                                                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                                                                if (task.isSuccessful()) {
+                                                                                                                Map<String, Object> snapshot = task.getResult().getData();
+                                                                                                                 //   if (snapshot.get("name") != null) {
+                                                                                                                Log.d("fffffffffffffffffffffffffff", "onComplete: of task data fetching " + task.getResult().getId());
+                                                                                                                Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + snapshot.get("name").toString());
+                                                                                                                Log.d("iiiiiiiiiiiiiiiiii", "Task name : " + task.getResult().get("destinataire"));
+                                                                                                            //}
+                                                                                                                }}
+                                                                                                        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("xxxxx", "onFailure: of TaskData fectching " + e.getLocalizedMessage());
+            }
+        });*/
+         /*       new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(Task<QuerySnapshot> task) {
                 Log.d("xxxxxdocs", "onComplete: of task data fetching " + task.getResult().getDocuments());
@@ -577,7 +625,7 @@ public class TaskDetail extends AppCompatActivity {
                         if (doc.get("name") != null)
                             name.setText(doc.get("name").toString());
 
-                        /*if (snapshot.get("heureFinReelle") != null)
+                        *//*if (snapshot.get("heureFinReelle") != null)
                             goal_end.setText(snapshot.get("heureFinReelle").toString());
 
                         if (snapshot.get("city") != null)
@@ -593,7 +641,7 @@ public class TaskDetail extends AppCompatActivity {
 
                         if (snapshot.get("houseNo") != null)
                             houseNo.setText(snapshot.get("houseNo").toString());
-*/
+*//*
 
 
                     } catch (Exception e) {
@@ -607,7 +655,7 @@ public class TaskDetail extends AppCompatActivity {
         public void onFailure(Exception e) {
             Log.d("xxxxx", "onFailure: of HouseData fectching " + e.getLocalizedMessage());
         }
-    });
+    });*/
     }
 
     public static int GoalCOmpleteFn(String todaay, String goal_create, String goal_end) {
@@ -761,7 +809,7 @@ public class TaskDetail extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         clearCalendar();
-        progressDialog.dismiss();
+//        progressDialog.dismiss();
     }
 
     private void clearCalendar(){

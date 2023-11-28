@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -49,6 +50,7 @@ public class ArchiveActivity extends AppCompatActivity {
     private List<com.samar.delivery.models.Task> tasks;
     private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
+    private SparseArray<String> taskIdsMap = new SparseArray<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +106,8 @@ public class ArchiveActivity extends AppCompatActivity {
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(ArchiveActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ArchiveActivity.this,TaskDetail.class);
+                String currentTaskId = taskIdsMap.get(position);
+                intent.putExtra("currentTaskid", currentTaskId);
                 startActivity(intent);
                 // finish();
             }
@@ -167,7 +171,7 @@ public class ArchiveActivity extends AppCompatActivity {
                             tasks = new ArrayList<com.samar.delivery.models.Task>();
 
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-
+                                String currentTaskId = doc.getId();
                                     /*com.samar.delivery.models.Task task1 = new com.samar.delivery.models.Task();
                                     task1.setId(doc.getId());
                                     task1.setLibelle(doc.get("name").toString());
@@ -244,7 +248,11 @@ public class ArchiveActivity extends AppCompatActivity {
 
 // Add the new row to the list
                                 if(doc.get("status").toString().equals("faite")){
-                                    timelineRowsListDone.add(myRow);}
+                                    timelineRowsListDone.add(myRow);
+                                    // Map the currentTaskId to the position in the list
+                                    taskIdsMap.put(timelineRowsListDone.size() - 1, currentTaskId);
+                                }
+
 
 
 

@@ -28,6 +28,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -96,7 +100,6 @@ public class TaskDetail extends AppCompatActivity {
     MCalendarView mCalendarView;
     ArrayList<DateData> dataArrayList;
     private StorageReference UserProfileImagesRef;
-    ImageView shareNotes;
     ProgressDialog progressDialog;
     DatabaseReference RootRef,HelloREf,newRef,notesRef;
     @SuppressLint("SimpleDateFormat")
@@ -108,18 +111,16 @@ public class TaskDetail extends AppCompatActivity {
     ImageView extendedFloatingEditButton;
     ImageView deleteGoal, NewNote, resetGoal;
     ImageButton add_img;
-    ImageView shareCal, Alarm;
+    ImageView  Alarm;
     CircleImageView goalPic;
-    private String EVENT_DATE_TIME = "null";
-    private String DATE_FORMAT = "dd/M/yyyy hh:mm:ss";
-    private String JUSTDATE_FORMAT = "dd/M/yyyy";
+
     ImageView shareStreak;
     String GoalName;
     String id;
-    public static final String ADD_TRIP_VALUE= TaskDetail.class.getName();
-    public static final String ADD_TRIP_TAG="ADD_TRIP_TAG";
-    public static final String ADD_TRIP_DATA_KEY="ADD_TRIP_DATA_KEY";
-    AppCompatButton Leave;
+
+    private WebView signatureWebView;
+    private static final int PICK_FILE_REQUEST_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,12 +128,24 @@ public class TaskDetail extends AppCompatActivity {
         setContentView(R.layout.activity_task_detail);
         InitializationMethod();
         clearCalendar();
-        highLightDate();
-        //RetriveData();
         id = getIntent().getStringExtra("currentTaskid");
 
-
         RetriveData(id);
+
+        NewNote = findViewById(R.id.newNote);
+        NewNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i2 = new Intent(TaskDetail.this, Signature.class);
+                startActivity(i2);
+            }
+        });
+
+
+
+
+
+
 
 
 
@@ -145,74 +158,13 @@ public class TaskDetail extends AppCompatActivity {
 
         //checkBreak();
 
-        Leave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkStatus();
-            }
-        });
 
 
 
     }
 
-    private void checkStatus() {
-        RootRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String status = snapshot.child("Status").getValue().toString();
-                if(status.equals("OnBreak")) {
-                    String e = snapshot.child("EndTime").getValue().toString();
-                    String s = snapshot.child("BreakEndDate").getValue().toString();
-                    cancelBreak(s, e);
-                } else {
-                    getLeaveDays();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void cancelBreak(String s, String e1) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        Date n = new Date();
-        String n1 = dateFormat.format(n);
-        try {
-            Date bEnd = dateFormat.parse(s);
-            Date td = dateFormat.parse(n1);
-            Date GoalEnd = dateFormat.parse(e1);
-
-            long diff = bEnd.getTime() - td.getTime();
-            long Days = diff / (24 * 60 * 60 * 1000);
-
-            if(Days > 0) {
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(GoalEnd);// this would default to now
-                calendar.add(Calendar.DAY_OF_MONTH, -1 * (int)Days);
-                Date x = calendar.getTime();
-                String x1 = dateFormat.format(x);
-
-                DatabaseReference db = RootRef.child(id);
-                db.child("Status").setValue("Active");
-                db.child("EndTime").setValue(x1);
-                db.child("BreakEndDate").removeValue();
-                Intent i = new Intent(TaskDetail.this, HomeActivity.class);
-                startActivity(i);
-                finish();
-            }
 
 
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
     private void InitializationMethod() {
@@ -220,17 +172,11 @@ public class TaskDetail extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getStringExtra("LISTKEY");
 
-        //UserProfileImagesRef = FirebaseStorage.getInstance ().getReference ().child ( "Goal Images" );
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid ();
-        //RootRef= FirebaseDatabase.getInstance ().getReference ().child("Users").child(currentUserID).child("Goals").child("Active");
        RootRef = FirebaseDatabase.getInstance().getReference("tasksCollection");
-        //HelloREf = FirebaseDatabase.getInstance ().getReference ().child("Users").child(currentUserID).child("Goals").child("Active").child(id).child("Win");
-
-        //notesRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("Goals").child("Active").child(id).child("Notes");
-        recyclerView = findViewById(R.id.streaknotes);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //newRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
+        //recyclerView = findViewById(R.id.streaknotes);
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this));
         name = findViewById(R.id.desc_goal_name);
 
         Alarm = findViewById(R.id.alarm);
@@ -251,9 +197,7 @@ public class TaskDetail extends AppCompatActivity {
         Sdate = findViewById(R.id.startDate);
         Edate = findViewById(R.id.endDate);
 
-        //Notes
 
-        Leave = findViewById(R.id.LeaveButton);
 
 
     }
@@ -392,173 +336,7 @@ public class TaskDetail extends AppCompatActivity {
         Objects.requireNonNull(progressDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
     }
 
-    private Bitmap screenShot(View view) {
-        View screenView = view;
-        screenView.setDrawingCacheEnabled(true);
-        Bitmap bitmap = Bitmap.createBitmap(screenView.getDrawingCache());
-        screenView.setDrawingCacheEnabled(false);
-        return bitmap;
-    }
 
-    private void share(Bitmap bitmap){
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String pathofBmp = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap , "IMG_" + Calendar.getInstance().getTime(), null);
-
-
-        if (!TextUtils.isEmpty(pathofBmp)){
-            Uri uri = Uri.parse(pathofBmp);
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("image/*");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Tracky : track your Goal");
-            //Retrieve value of completed goal using shared preferences from RetreiveData() function
-            String goal_cmpltd = PreferenceManager.getDefaultSharedPreferences(TaskDetail.this).getString("goal_completed","");
-            //Retreive value of consistency using shared preferences from RetreiveData() function
-            String goal_consistency = PreferenceManager.getDefaultSharedPreferences(TaskDetail.this).getString("consistency","");
-            //Retreive goal name using shared preferences from RetreiveData() function
-            String goal_name = PreferenceManager.getDefaultSharedPreferences(TaskDetail.this).getString("goal_name","");
-            //Retreive name using Shared preference from Retrieve data function
-            String user_name = PreferenceManager.getDefaultSharedPreferences(TaskDetail.this).getString("name","");
-
-
-        }
-
-    }
-
-    private void getLeaveDays() {
-        new LovelyTextInputDialog(this, R.style.EditTextTintTheme)
-                .setTopColorRes(R.color.blue)
-                .setTitle("Take Break from Current Goal")
-                .setMessage("How many days of break you need?")
-                .setInputType(InputType.TYPE_CLASS_NUMBER)
-                .setIcon(R.drawable.ic_baseline_edit_24)
-                .setInputFilter("Wrong Input, please try again!", new LovelyTextInputDialog.TextFilter() {
-                    @Override
-                    public boolean check(String text) {
-                        return text.matches("\\w+");
-                    }
-                })
-                .setConfirmButton(android.R.string.ok, new LovelyTextInputDialog.OnTextInputConfirmListener() {
-                    @Override
-                    public void onTextInputConfirmed(String text) {
-                        String myText = text; //Saving Entered name in String
-                        int Days = Integer.parseInt(myText);
-                        if(myText.isEmpty())
-                            Toast.makeText(TaskDetail.this, "Please input number of Days", Toast.LENGTH_SHORT).show();
-                        else
-                            askLeave(Days);
-                    }
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .show();
-    }
-
-    private void askLeave(int days) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-            Date endDate = dateFormat.parse(goal_end);
-            Date today = new Date();
-            String nDate = dateFormat.format(today);
-            Date updatedToday = dateFormat.parse(nDate);
-            long diff = endDate.getTime() - updatedToday.getTime();
-            long Days = diff / (24 * 60 * 60 * 1000);
-            int d = (int) Days - days;
-            if(d < 1)
-                Toast.makeText(this, "Please select less days" , Toast.LENGTH_SHORT).show();
-            else {
-                Toast.makeText(this, "Leave Granted!", Toast.LENGTH_SHORT).show();
-                updateGoal(days);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void updateGoal(long days) {
-
-        Toast.makeText(this, ""+days, Toast.LENGTH_SHORT).show();
-
-        int intt = (int) days;
-
-        SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("dd/M/yyyy hh:mm:ss");
-
-        String goal_created_date = goal_create;
-
-        Date create_date = null;
-        try {
-            create_date = simpleDateFormat2.parse(goal_created_date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-
-        Date today = new Date();
-
-        Date today_date_after_increse = new Date(today.getTime() + (1000 * 60 * 60 * 24 * intt));
-        Date create_date_after_increse = new Date(create_date.getTime() + (1000 * 60 * 60 * 24 * intt));
-
-
-        String today_date_after_increse_string = simpleDateFormat2.format(today_date_after_increse);
-        String create_date_after_increse_string = simpleDateFormat2.format(create_date_after_increse);
-
-        HashMap<String,Object> onlineStat = new HashMap<> (  );
-        onlineStat.put ( "TodayTime", create_date_after_increse_string);
-        onlineStat.put ("Status", "OnBreak");
-        onlineStat.put ("BreakEndDate", today_date_after_increse_string);
-
-        RootRef.child(id)
-                .updateChildren ( onlineStat );
-
-        Intent i = new Intent(TaskDetail.this, HomeActivity.class);
-        startActivity(i);
-        finish();
-    }
-
-
-
-    /*public void Graph() {
-
-        RootRef.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String fetch = snapshot.child("Data").child("Seven").getValue().toString();
-                String[] sp = fetch.split(":");
-
-
-                ValueLineChart mCubicValueLineChart = (ValueLineChart) findViewById(R.id.cubiclinechart);
-
-
-                ValueLineSeries series = new ValueLineSeries();
-
-                int x = Integer.parseInt(sp[6]);
-
-                if(x>0 && x<=33) { series.setColor(getResources().getColor(R.color.orange)); }
-                else if(x>33 && x<=66) { series.setColor(getResources().getColor(R.color.green)); }
-                else { series.setColor(0xFF56B7F1); }
-
-                series.addPoint(new ValueLinePoint("null", Integer.parseInt(sp[0])));
-                series.addPoint(new ValueLinePoint("7th", Integer.parseInt(sp[0])));
-                series.addPoint(new ValueLinePoint("6th", Integer.parseInt(sp[1])));
-                series.addPoint(new ValueLinePoint("5th", Integer.parseInt(sp[2])));
-                series.addPoint(new ValueLinePoint("4th", Integer.parseInt(sp[3])));
-                series.addPoint(new ValueLinePoint("3rd", Integer.parseInt(sp[4])));
-                series.addPoint(new ValueLinePoint("2nd", Integer.parseInt(sp[5])));
-                series.addPoint(new ValueLinePoint("Today", Integer.parseInt(sp[6])));
-                series.addPoint(new ValueLinePoint("null", Integer.parseInt(sp[6])));
-
-                mCubicValueLineChart.addSeries(series);
-                mCubicValueLineChart.startAnimation();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-*/
     private void RetriveData(String taskDocId) {
 
 
@@ -571,20 +349,15 @@ public class TaskDetail extends AppCompatActivity {
                 if (documentSnapshot.get("name") != null)
                     name.setText(documentSnapshot.get("name").toString());
 
-               /* if (documentSnapshot.exists()) {
-                    // Document exists, retrieve the data
-                    com.samar.delivery.models.Task data = documentSnapshot.toObject(com.samar.delivery.models.Task.class);
-                    Log.d("fffffffffffffffffffffffffff", "onComplete: of task data fetching " + data.getId());
-                    Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + data.getStatus());
-                  //  Log.d("iiiiiiiiiiiiiiiiii", "Task name : " + task.getResult().get("destinataire"));
+                if (documentSnapshot.get("heureFinReelle") != null)
+                    left.setText(documentSnapshot.get("heureFinReelle").toString());
 
-                    // Now 'data' contains the data from the document
-                    // Handle the data as needed
-                } else {
-                    // Document does not exist
-                    // Handle the case where the document does not exist
-                }*/
+                if (documentSnapshot.get("heureFinReelle") != null)
+                    Edate.setText(documentSnapshot.get("heureFinReelle").toString());
+                if (documentSnapshot.get("heureDebutReelle") != null)
+                    Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
             }
+
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -592,170 +365,16 @@ public class TaskDetail extends AppCompatActivity {
                 Log.e("Firebase", "Error getting document", e);
             }
         });
-            /*    addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
 
-                                                                                                            @Override
-                                                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                                                                                if (task.isSuccessful()) {
-                                                                                                                Map<String, Object> snapshot = task.getResult().getData();
-                                                                                                                 //   if (snapshot.get("name") != null) {
-                                                                                                                Log.d("fffffffffffffffffffffffffff", "onComplete: of task data fetching " + task.getResult().getId());
-                                                                                                                Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + snapshot.get("name").toString());
-                                                                                                                Log.d("iiiiiiiiiiiiiiiiii", "Task name : " + task.getResult().get("destinataire"));
-                                                                                                            //}
-                                                                                                                }}
-                                                                                                        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("xxxxx", "onFailure: of TaskData fectching " + e.getLocalizedMessage());
-            }
-        });*/
-         /*       new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(Task<QuerySnapshot> task) {
-                Log.d("xxxxxdocs", "onComplete: of task data fetching " + task.getResult().getDocuments());
-                tasks = new ArrayList<com.samar.delivery.models.Task>();
-
-                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-
-                    List<DocumentSnapshot> snapshot = task.getResult().getDocuments();
-                    try {
-
-
-                        if (doc.get("name") != null)
-                            name.setText(doc.get("name").toString());
-
-                        *//*if (snapshot.get("heureFinReelle") != null)
-                            goal_end.setText(snapshot.get("heureFinReelle").toString());
-
-                        if (snapshot.get("city") != null)
-                            city.setText(snapshot.get("city").toString());
-                        if (snapshot.get("location") != null)
-                            location.setText(snapshot.get("location").toString());
-
-                        if (snapshot.get("street") != null)
-                            street.setText(snapshot.get("street").toString());
-
-                        if (snapshot.get("size") != null)
-                            size.setText(snapshot.get("size").toString());
-
-                        if (snapshot.get("houseNo") != null)
-                            houseNo.setText(snapshot.get("houseNo").toString());
-*//*
-
-
-                    } catch (Exception e) {
-                        Log.d("xxxxxxx", "onComplete Exception in setting data to house : " + e.getLocalizedMessage());
-                    }
-
-                }
-            }
-    }).addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(Exception e) {
-            Log.d("xxxxx", "onFailure: of HouseData fectching " + e.getLocalizedMessage());
-        }
-    });*/
     }
 
-    public static int GoalCOmpleteFn(String todaay, String goal_create, String goal_end) {
 
-        float gh = (DayReturn(todaay,goal_create)+1)*100/(DayReturn(goal_end,goal_create)+1);
-        return Math.round(gh);
-    }
-
-    private void countDownStart() {
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    handler.postDelayed(this, 1000);
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-                    Date event_date = dateFormat.parse(EVENT_DATE_TIME);
-                    Date current_date = new Date();
-                    Date created = dateFormat.parse(goal_create);
-                    if (!current_date.after(event_date)) {
-                        long diff = event_date.getTime() - current_date.getTime();
-                        long diffCreate = (event_date.getTime() - created.getTime()) / (24 * 60 * 60 * 1000);
-                        Days = diff / (24 * 60 * 60 * 1000);
-                        long Hours = diff / (60 * 60 * 1000) % 24;
-                        long Minutes = diff / (60 * 1000) % 60;
-                        long Seconds = diff / 1000 % 60;
-                        long totaldays= event_date.getTime()/(24 * 60 * 60 * 1000);
-                        long percent= (Days*100/totaldays);
-                        //StreakOvewview Data
-                        Tdays.setText(String.format("%02d",diffCreate)+"d");
-                        Dleft.setText(String.format("%02d",Days)+"d");
-                        Sdate.setText(goal_create.substring(0,10).trim());
-                        Edate.setText(goal_end.substring(0,10).trim());
-                        notes.setText(description);
-                        left.setText(String.format("%02d",Days)+" days  "+String.format("%02d", Hours)+":"+String.format("%02d", Minutes)+":"+String.format("%02d", Seconds));
-                        if(percent<=33) {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.red));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightred));
-                        }
-                        else if(percent<=66)
-                        {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.yellow));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightyellow));
-                        }
-                        else
-                        {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.green));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightgreen));
-                        }
-                    } else {
-
-                        handler.removeCallbacks(runnable);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        handler.postDelayed(runnable, 0);
-    }
 
     protected void onStop() {
         super.onStop();
         handler.removeCallbacks(runnable);
     }
 
-    public static long DayReturn(String high,String low){
-
-        SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("dd/M/yyyy");
-        Date date1=null,date2 = null;
-        try {
-            date2 = simpleDateFormat2.parse(low);
-            date1 = simpleDateFormat2.parse(high);
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        long different = date1.getTime() - date2.getTime();
-
-
-        long secondsInMilli = 1000;
-        long minutesInMilli = secondsInMilli * 60;
-        long hoursInMilli = minutesInMilli * 60;
-        long daysInMilli = hoursInMilli * 24;
-
-        long elapsedDays = different / daysInMilli;
-        different = different % daysInMilli;
-
-        return elapsedDays;
-    }
-
-
-    public String ConsistentFn(int node,String today_date,String create_date){
-
-
-        float fl  = (float)(node*100)/(DayReturn(today_date,create_date)+1);
-        int iu = Math.round(fl);
-        return String.valueOf(iu);
-
-    }
 
 
     public void AlarmAct(View view) {

@@ -27,9 +27,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    buildFeatures{
+        viewBinding true
+    }
 }
 
 dependencies {
+    implementation files('libs/jSignature.min.noconflict.js')
+    implementation files('libs/jquery-3.3.1.min.js')
+
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'

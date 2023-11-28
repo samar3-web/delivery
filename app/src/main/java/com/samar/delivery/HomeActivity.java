@@ -481,6 +481,8 @@ public class HomeActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         RetriveUserImage();
+        chipNavigationBar.setItemSelected(R.id.nav_home,
+                true);
      //   loadData();
     }
 
@@ -493,6 +495,23 @@ public class HomeActivity extends AppCompatActivity {
         long symmetricTime = currentDate.getTime() - timeDifference;
 
         return new Date(symmetricTime);
+    }
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            new AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to exit the application?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        }
     }
 
     }

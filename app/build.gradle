@@ -66,4 +66,5 @@ dependencies {
     implementation 'com.yarolegovich:lovely-dialog:1.1.1'
 
     implementation 'com.romandanylyk:pageindicatorview:1.0.3'
+
 }

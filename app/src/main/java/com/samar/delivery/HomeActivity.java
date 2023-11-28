@@ -238,6 +238,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
+        String currentTaskid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -246,10 +247,14 @@ public class HomeActivity extends AppCompatActivity {
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
+                intent.putExtra("currentTaskid", currentTaskid);
                 startActivity(intent);
-               // finish();
+                Log.d("iiiiiiiiiiid",currentTaskid);
+
+                // finish();
             }
         });
+
         myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -257,6 +262,9 @@ public class HomeActivity extends AppCompatActivity {
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
+                intent.putExtra("currentTaskid", currentTaskid);
+
+                Log.d("iiiiiiiiiiid",currentTaskid);
                 startActivity(intent);
                 // finish();
             }
@@ -282,49 +290,6 @@ public class HomeActivity extends AppCompatActivity {
         // Vérifier l'authentification de l'utilisateur avant de charger les données
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
-            // L'utilisateur est authentifié, vous pouvez accéder à la base de données
-            // Récupérer les tâches à faire depuis Firebase
-           /* databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Log.d("Firebase", "succées");
-
-                    List<Task> allTasks = new ArrayList<>();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Task task = snapshot.getValue(Task.class);
-                        allTasks.add(task);
-                    }
-
-                    // Vous pouvez maintenant utiliser la liste de toutes les tâches comme vous le souhaitez
-                    // Par exemple, vous pouvez filtrer les tâches par statut ici si nécessaire
-
-                    // Exemple de filtrage pour les tâches "à faire"
-                    //List<Task> toDoList = filterTasksByStatus(allTasks, "à faire");
-                    //toDoAdapter.setTaskList(toDoList);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Gestion des erreurs
-                }
-            });
-
-           /* databaseReference.orderByChild("status").equalTo("à faire").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    List<Task> toDoList = new ArrayList<>();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Task task = snapshot.getValue(Task.class);
-                        toDoList.add(task);
-                    }
-                    toDoAdapter.setTaskList(toDoList);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Gestion des erreurs
-                }
-            });*/
 
             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
             firestore.collection("tasksCollection").get()
@@ -336,25 +301,11 @@ public class HomeActivity extends AppCompatActivity {
 
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
 
-                                    /*com.samar.delivery.models.Task task1 = new com.samar.delivery.models.Task();
-                                    task1.setId(doc.getId());
-                                    task1.setLibelle(doc.get("name").toString());
-                                    task1.setDuree(doc.get("duree").toString());
-                                    task1.setStatus((doc.get("status")).toString());*/
-                                    //task1.setHeureDateDebutReelle(doc.get("HeureDateDebutReelle").toString());
-                                    //task1.setHeureDateFinReelle(doc.get("setHeureDateFinReelle").toString());
 // Create new timeline row (Row Id)
                                 TimelineRow myRow = new TimelineRow(0);
 
 // To set the row Date (optional)
-                               /* SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
-                                try {
-                                    Date date = dateFormat.parse(doc.get("heureDateDebutPrevu").toString());
-                                    myRow.setDate(date);
-                                } catch (ParseException e) {
-                                    throw new RuntimeException(e);
-                                }*/
                                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                                 try {
                                    // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
@@ -419,13 +370,6 @@ public class HomeActivity extends AppCompatActivity {
                                 Log.d("pppppppppppppp","timelineRowsList.size() : "+timelineRowsList.size());
 
 
-                                   /* tasks.add(task1);
-
-                                toDoAdapter = new TaskAdapter(HomeActivity.this, tasks, R.layout.tache_cardview);
-
-                                // Ajuster l'adaptateur et le gestionnaire de disposition de la recyclerViewToDo existante
-                                recyclerViewToDo.setAdapter(toDoAdapter);
-                                recyclerViewToDo.setLayoutManager(new LinearLayoutManager(HomeActivity.this));*/
                             }
                             myAdapter = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsList,
                                     //if true, list will be sorted by date

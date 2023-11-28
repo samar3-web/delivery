@@ -355,6 +355,8 @@ public class ArchiveActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         RetriveUserImage();
+        chipNavigationBar.setItemSelected(R.id.nav_new_archive,
+                true);
         //   loadData();
     }
 

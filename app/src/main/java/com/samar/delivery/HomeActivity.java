@@ -489,7 +489,11 @@ public class HomeActivity extends AppCompatActivity {
 
     //pour bien calculer la date de laiste view (remaining) par symmetric
 
-    private static Date calculateSymmetricDate(Date givenDate) {
+    public static Date calculateSymmetricDate(Date givenDate) {
+        if (givenDate == null) {
+            // Retourne la date actuelle si givenDate est null
+            return new Date();
+        }
         Date currentDate = new Date();
         long timeDifference = givenDate.getTime() - currentDate.getTime();
         long symmetricTime = currentDate.getTime() - timeDifference;

@@ -96,16 +96,16 @@ public class HomeActivity extends AppCompatActivity {
         window.setNavigationBarColor(Color.parseColor("#3a67ff"));
 
 
-        linearLayout1 = findViewById(R.id.linearLayout1);
-        linearLayout2 = findViewById(R.id.linearLayout2);
-         pageIndicatorView = findViewById(R.id.pageIndicatorView);
+        /*linearLayout1 = findViewById(R.id.linearLayout1);
+        linearLayout2 = findViewById(R.id.linearLayout2);*/
+        /* pageIndicatorView = findViewById(R.id.pageIndicatorView);
         pageIndicatorView.setCount(2); // specify total count of indicators
         pageIndicatorView.clearSelection();
         pageIndicatorView.setSelection(0);
 
-        pageIndicatorView.setAnimationType(AnimationType.WORM);
+        pageIndicatorView.setAnimationType(AnimationType.WORM);*/
 
-        linearLayout1.setOnTouchListener(new View.OnTouchListener() {
+       /* linearLayout1.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -182,7 +182,7 @@ public class HomeActivity extends AppCompatActivity {
 
             private float startX;
             private float endX;
-        });
+        });*/
 
        /* // Initialiser la visibilité des LinearLayout
         linearLayout1.setVisibility(View.VISIBLE);
@@ -195,9 +195,12 @@ public class HomeActivity extends AppCompatActivity {
      //   gestureDetector = new GestureDetector(this, new SwipeGestureDetector());
 
         // Get the ListView and Bind it with the Timeline Adapter
-        myListView = (ListView) findViewById(R.id.timeline_listView);
-        myListView1 = (ListView) findViewById(R.id.timeline_listView1);
+        /*myListView = (ListView) findViewById(R.id.timeline_listView);
+        myListView1 = (ListView) findViewById(R.id.timeline_listView1);*/
 
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.frag_container_nav,
+                        new HomeFragment()).commit();
         bottomMenu();
         profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,18 +236,18 @@ public class HomeActivity extends AppCompatActivity {
 
 
 // Create Timeline rows List
-        timelineRowsList = new ArrayList<>();
-        timelineRowsList1 = new ArrayList<>();
-        loadData();
+        /*timelineRowsList = new ArrayList<>();
+        timelineRowsList1 = new ArrayList<>();*/
+        //loadData();
 
-        Log.d("aaaaaaaaaaaaaaaa","timelineRowsList.size() : "+timelineRowsList.size());
+       // Log.d("aaaaaaaaaaaaaaaa","timelineRowsList.size() : "+timelineRowsList.size());
 // Create the Timeline Adapter
 
 
 
        // String currentTaskid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get the item that was clicked
@@ -276,7 +279,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 // finish();
             }
-        });
+        });*/
 
     }
     private void setupRecyclerView() {
@@ -453,15 +456,23 @@ public class HomeActivity extends AppCompatActivity {
                 (new ChipNavigationBar.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(int i) {
-                      //  Fragment fragment = null;
+                        Fragment fragment = null;
                         switch (i){
                             case R.id.nav_home:
-                              //  fragment = new ActiveGoalFragment();
+                                fragment = new HomeFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.frag_container_nav,
+                                                fragment).commit();
                                 break;
                             case R.id.nav_new_archive:
-                                Intent ProfileIntent = new Intent ( HomeActivity.this,ArchiveActivity.class );
+                                /*Intent ProfileIntent = new Intent ( HomeActivity.this,ArchiveActivity.class );
                                 startActivity ( ProfileIntent );
-                                break;
+                                break;*/
+                            fragment = new ArchiveFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.frag_container_nav,
+                                                fragment).commit();
+                            break;
                             case R.id.nav_new_chat:
                                // fragment = new RankFragment();
                                 break;
@@ -469,6 +480,7 @@ public class HomeActivity extends AppCompatActivity {
                                // fragment = new SettingsFragment();
                                 break;
                         }
+
                        /* getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.frag_container_nav,
                                         fragment).commit();*/

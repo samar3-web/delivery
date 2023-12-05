@@ -81,18 +81,39 @@
         android:layout_below="@id/handlee">
         <!-- Premier LinearLayout -->
 
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">-->
+
+
+        <LinearLayout
+            android:id="@+id/frag_container_nav"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/bottom_nav_bar"
+            android:layout_below="@id/handlee"
+            android:orientation="horizontal">
+        </LinearLayout>
 
 
 
-            <!-- Deuxième LinearLayout -->
+
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            &lt;!&ndash; Deuxième LinearLayout &ndash;&gt;
             <LinearLayout
                 android:id="@+id/linearLayout1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <!-- Vos vues pour le deuxième écran -->
-                <!-- ... -->
+                &lt;!&ndash; Vos vues pour le deuxième écran &ndash;&gt;
+                &lt;!&ndash; ... &ndash;&gt;
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -125,7 +146,7 @@
                     android:dividerHeight="0dp" />
 
             </LinearLayout>
-        <!-- Premier LinearLayout -->
+        &lt;!&ndash; Premier LinearLayout &ndash;&gt;
         <LinearLayout
             android:id="@+id/linearLayout2"
             android:layout_width="match_parent"
@@ -133,8 +154,8 @@
             android:orientation="vertical"
             >
 
-            <!-- Vos vues pour le premier écran -->
-            <!-- ... -->
+            &lt;!&ndash; Vos vues pour le premier écran &ndash;&gt;
+            &lt;!&ndash; ... &ndash;&gt;
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -170,9 +191,11 @@
 
 
 
+        </LinearLayout>
+    </LinearLayout>-->
     </LinearLayout>
 
-    <com.rd.PageIndicatorView
+    <!--<com.rd.PageIndicatorView
         android:id="@+id/pageIndicatorView"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -185,7 +208,7 @@
         app:piv_dynamicCount="true"
         app:piv_interactiveAnimation="true"
         app:piv_selectedColor="@color/colorPrimary"
-        app:piv_unselectedColor="@color/colorAccent" />
+        app:piv_unselectedColor="@color/colorAccent" />-->
     <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"

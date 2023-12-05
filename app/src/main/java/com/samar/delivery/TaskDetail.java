@@ -120,7 +120,9 @@ public class TaskDetail extends AppCompatActivity {
 
     private WebView signatureWebView;
     private static final int PICK_FILE_REQUEST_CODE = 1;
-
+    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm";
+    private String JUSTDATE_FORMAT = "yyyy-MM-dd";
+    private String EVENT_DATE_TIME = "null";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -356,6 +358,9 @@ public class TaskDetail extends AppCompatActivity {
                     Edate.setText(documentSnapshot.get("heureFinReelle").toString());
                 if (documentSnapshot.get("heureDebutReelle") != null)
                     Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
+
+
+
             }
 
         }).addOnFailureListener(new OnFailureListener() {
@@ -370,10 +375,7 @@ public class TaskDetail extends AppCompatActivity {
 
 
 
-    protected void onStop() {
-        super.onStop();
-        handler.removeCallbacks(runnable);
-    }
+
 
 
 
@@ -446,6 +448,61 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
+    private void countDownStart() {
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    handler.postDelayed(this, 1000);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                    Date event_date = dateFormat.parse(EVENT_DATE_TIME);
+                    Date current_date = new Date();
+                    Date created = dateFormat.parse(goal_create);
+                    if (!current_date.after(event_date)) {
+                        long diff = event_date.getTime() - current_date.getTime();
+                        long diffCreate = (event_date.getTime() - created.getTime()) / (24 * 60 * 60 * 1000);
+                        Days = diff / (24 * 60 * 60 * 1000);
+                        long Hours = diff / (60 * 60 * 1000) % 24;
+                        long Minutes = diff / (60 * 1000) % 60;
+                        long Seconds = diff / 1000 % 60;
+                        long totaldays= event_date.getTime()/(24 * 60 * 60 * 1000);
+                        long percent= (Days*100/totaldays);
+                        //StreakOvewview Data
+                        Tdays.setText(String.format("%02d",diffCreate)+"d");
+                        Dleft.setText(String.format("%02d",Days)+"d");
+                        Sdate.setText(goal_create.substring(0,10).trim());
+                        Edate.setText(goal_end.substring(0,10).trim());
+                        notes.setText(description);
+                        left.setText(String.format("%02d",Days)+" days  "+String.format("%02d", Hours)+":"+String.format("%02d", Minutes)+":"+String.format("%02d", Seconds));
+                        if(percent<=33) {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.red));
+                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightred));
+                        }
+                        else if(percent<=66)
+                        {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.yellow));
+                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightyellow));
+                        }
+                        else
+                        {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.green));
+                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightgreen));
+                        }
+                    } else {
 
+                        handler.removeCallbacks(runnable);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        handler.postDelayed(runnable, 0);
+    }
+
+    protected void onStop() {
+        super.onStop();
+        handler.removeCallbacks(runnable);
+    }
 
 }

@@ -130,8 +130,9 @@
                                         android:text="Remaining Time"
                                         android:textStyle="bold"
                                         android:textColor="@color/black"
-                                        android:textSize="14sp"
-                                        android:typeface="sans" />
+                                        android:textSize="15sp"
+                                        android:typeface="sans"
+                                        android:maxWidth="240dp"/>
 
 
                                 </LinearLayout>

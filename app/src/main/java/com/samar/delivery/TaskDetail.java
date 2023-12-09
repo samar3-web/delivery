@@ -84,6 +84,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -383,15 +384,45 @@ public class TaskDetail extends AppCompatActivity {
 
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         firebaseFirestore.collection("tasksCollection").document(taskDocId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @SuppressLint("ResourceAsColor")
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.getId());
                 Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.get("name").toString());
+                if(documentSnapshot.get("status").toString().equals("faite"))
+                {Alarm.setVisibility(View.GONE);
+
+                }
                 if (documentSnapshot.get("name") != null)
                     name.setText(documentSnapshot.get("name").toString());
 
                 if (documentSnapshot.get("heureDateFinPrevu") != null) {
                     left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
+                    if(documentSnapshot.get("status").toString().equals("faite"))
+                    {// Récupérer la date depuis Firestore
+                        String dateString = documentSnapshot.get("heureDateFinPrevu").toString();
+
+// Définir le format de la date d'entrée
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+
+                        try {
+                            // Convertir la chaîne de date en objet Date
+                            Date date = inputFormat.parse(dateString);
+
+                            // Définir le format de la date de sortie
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.getDefault());
+
+                            // Formater la date en tant que chaîne dans le nouveau format
+                            String formattedDate = outputFormat.format(date);
+
+                            // Définir le texte dans la vue
+                            left.setText("Done on " + formattedDate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        left.setTextColor(getResources().getColor(R.color.blue));
+
+                    }
                     task_create = documentSnapshot.get("heureDateFinPrevu").toString()+":00";;
                 }
                 if (documentSnapshot.get("heureDateFinPrevu") != null){

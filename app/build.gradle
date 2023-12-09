@@ -74,4 +74,6 @@ dependencies {
 
     implementation 'com.romandanylyk:pageindicatorview:1.0.3'
 
+    implementation files('libs/maps-sdk-1.2.0.aar')
+
 }

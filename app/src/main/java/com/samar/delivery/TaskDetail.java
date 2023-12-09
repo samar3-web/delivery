@@ -1,5 +1,11 @@
 package com.samar.delivery;
-
+import com.microsoft.maps.Geopoint;
+import com.microsoft.maps.MapAnimationKind;
+import com.microsoft.maps.MapElementLayer;
+import com.microsoft.maps.MapIcon;
+import com.microsoft.maps.MapImage;
+import com.microsoft.maps.MapScene;
+import com.microsoft.maps.MapView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +31,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -37,6 +44,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +65,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.microsoft.maps.MapView;
 import com.squareup.picasso.Picasso;
 import com.yarolegovich.lovelydialog.LovelyTextInputDialog;
 
@@ -90,37 +99,40 @@ public class TaskDetail extends AppCompatActivity {
     List<com.samar.delivery.models.Task> tasks;
 
     RecyclerView recyclerView;
-    TextView name,consis,left,goal_lft_pert, notes;
+    TextView name,consis,left,task_lft_pert, notes;
     TextView Tdays, Dleft, Sdate, Edate;
     RelativeLayout rel;
     String currentUserID;
     String description;
     long Days;
-    String goal_end, goal_create;
+    String task_end, task_create;
     MCalendarView mCalendarView;
     ArrayList<DateData> dataArrayList;
     private StorageReference UserProfileImagesRef;
     ProgressDialog progressDialog;
     DatabaseReference RootRef,HelloREf,newRef,notesRef;
     @SuppressLint("SimpleDateFormat")
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/M/yyyy hh:mm:ss");
-    SimpleDateFormat justDateFormat = new SimpleDateFormat("dd/M/yyyy");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    SimpleDateFormat justDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private Handler handler = new Handler();
     private Runnable runnable;
+    private static final String MY_API_KEY = "AlwLTKgevIemLkhFY8wA2oDQwpxY8SBBAR8a5dXymXDFKTmfGWKkXnJGQkGzXUMM";
+    private MapView mapView;
+    private ScrollView scrollView;
     ImageView extendedFloatingShareButton;
     ImageView extendedFloatingEditButton;
-    ImageView deleteGoal, NewNote, resetGoal;
+    ImageView deleteTask, NewNote, resetTask;
     ImageButton add_img;
     ImageView  Alarm;
-    CircleImageView goalPic;
+    CircleImageView taskPic;
 
     ImageView shareStreak;
-    String GoalName;
+    String TaskName;
     String id;
 
     private WebView signatureWebView;
     private static final int PICK_FILE_REQUEST_CODE = 1;
-    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm";
+    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String JUSTDATE_FORMAT = "yyyy-MM-dd";
     private String EVENT_DATE_TIME = "null";
 
@@ -145,7 +157,7 @@ public class TaskDetail extends AppCompatActivity {
 
 
 
-
+        countDownStart();
 
 
 
@@ -159,6 +171,33 @@ public class TaskDetail extends AppCompatActivity {
         });
 
         //checkBreak();
+        scrollView = findViewById(R.id.scrollView);
+        mapView = findViewById(R.id.mapView);
+        mapView.setCredentialsKey(MY_API_KEY);
+        mapView.onCreate(savedInstanceState);
+        mapView.onCreate(savedInstanceState);
+        mapView.setOnTouchListener(new View.OnTouchListener() {
+
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // désactiver le défilement du ScrollView
+                        scrollView.requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // activer le défilement du ScrollView
+                        scrollView.requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+                // transmettre les événements tactiles au MapView
+                mapView.onTouchEvent(event);
+                return true;
+            }
+        });
 
 
 
@@ -179,18 +218,18 @@ public class TaskDetail extends AppCompatActivity {
        RootRef = FirebaseDatabase.getInstance().getReference("tasksCollection");
         //recyclerView = findViewById(R.id.streaknotes);
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        name = findViewById(R.id.desc_goal_name);
+        name = findViewById(R.id.desc_task_name);
 
         Alarm = findViewById(R.id.alarm);
 
-        extendedFloatingEditButton = findViewById(R.id.edit_goal_btn);
-        consis = findViewById(R.id.desc_goal_const);
-        left = findViewById(R.id.desc_goal_left);
+        extendedFloatingEditButton = findViewById(R.id.edit_task_btn);
+        consis = findViewById(R.id.desc_task_const);
+        left = findViewById(R.id.desc_task_left);
         mCalendarView= findViewById(R.id.history_calendarView);
-        goal_lft_pert = findViewById(R.id.desc_goal_leftper);
+        task_lft_pert = findViewById(R.id.desc_task_leftper);
 
         add_img = findViewById(R.id.add_img);
-        goalPic = findViewById(R.id.imageIcon);
+        taskPic = findViewById(R.id.imageIcon);
 
 
         //Streak Overview
@@ -258,8 +297,8 @@ public class TaskDetail extends AppCompatActivity {
                     try {
                         // Converting the image uri to bitmap
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(),uri);
-                        goalPic.setImageBitmap(bitmap);
-                        uploadGoalPic(bitmap);
+                        taskPic.setImageBitmap(bitmap);
+                        uploadTaskPic(bitmap);
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -269,14 +308,14 @@ public class TaskDetail extends AppCompatActivity {
                 // Image received from camera
                 case CAMERA_INTENT_CODE:
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    goalPic.setImageBitmap(bitmap);
-                    uploadGoalPic(bitmap);
+                    taskPic.setImageBitmap(bitmap);
+                    uploadTaskPic(bitmap);
                     break;
             }
         }
     }
 
-    private void uploadGoalPic(Bitmap bitmap) {
+    private void uploadTaskPic(Bitmap bitmap) {
 
 
         StorageReference storageReference = UserProfileImagesRef.child ( id + ".jpg");
@@ -304,26 +343,26 @@ public class TaskDetail extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 // Setting the image url as the user_image property of the user in the database
                                 String pfpUrl = task.getResult().toString();
-                                RootRef.child(id).child("goal_image").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                RootRef.child(id).child("task_image").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         progressDialog.dismiss();
                                         if (task.isSuccessful()) {
-                                            Toast.makeText(getApplicationContext(), "Goal picture updated", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Task picture updated", Toast.LENGTH_SHORT).show();
                                         } else {
-                                            Toast.makeText(getApplicationContext(), "Failed to upload goal picture", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Failed to upload task picture", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                             } else {
                                 progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(), "Failed to upload goal picture", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Failed to upload task picture", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
                 } else {
                     progressDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Failed to upload goal picture", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Failed to upload task picture", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -351,13 +390,18 @@ public class TaskDetail extends AppCompatActivity {
                 if (documentSnapshot.get("name") != null)
                     name.setText(documentSnapshot.get("name").toString());
 
-                if (documentSnapshot.get("heureFinReelle") != null)
-                    left.setText(documentSnapshot.get("heureFinReelle").toString());
-
-                if (documentSnapshot.get("heureFinReelle") != null)
-                    Edate.setText(documentSnapshot.get("heureFinReelle").toString());
-                if (documentSnapshot.get("heureDebutReelle") != null)
-                    Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
+                if (documentSnapshot.get("heureDateFinPrevu") != null) {
+                    left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
+                    task_create = documentSnapshot.get("heureDateFinPrevu").toString()+":00";;
+                }
+                if (documentSnapshot.get("heureDateFinPrevu") != null){
+                    Edate.setText(documentSnapshot.get("heureDateFinPrevu").toString());
+                EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
+                    EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
+               task_end = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
+                }
+                if (documentSnapshot.get("heureDateDebutPrevu") != null)
+                    Sdate.setText(documentSnapshot.get("heureDateDebutPrevu").toString());
 
 
 
@@ -381,7 +425,7 @@ public class TaskDetail extends AppCompatActivity {
 
     public void AlarmAct(View view) {
         Intent i = new Intent(getApplicationContext(), AlarmActivity.class); //Pass to AlarmActivity Class
-        i.putExtra("GoalName", GoalName); //Passing Goal Name
+        i.putExtra("TaskName", TaskName); //Passing Task Name
         startActivity(i);
     }
 
@@ -457,7 +501,10 @@ public class TaskDetail extends AppCompatActivity {
                     SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
                     Date event_date = dateFormat.parse(EVENT_DATE_TIME);
                     Date current_date = new Date();
-                    Date created = dateFormat.parse(goal_create);
+                    Date created = dateFormat.parse(task_create);
+                    Log.d("oooooooooooooooooooo","Date created = dateFormat.parse(task_create); "+task_create);
+                    Log.d("llllllllllllll","Edate.setText(task_end.substring(0,10).trim()); "+task_create.substring(0,10).trim()+"  "+current_date.after(event_date));
+
                     if (!current_date.after(event_date)) {
                         long diff = event_date.getTime() - current_date.getTime();
                         long diffCreate = (event_date.getTime() - created.getTime()) / (24 * 60 * 60 * 1000);
@@ -470,23 +517,25 @@ public class TaskDetail extends AppCompatActivity {
                         //StreakOvewview Data
                         Tdays.setText(String.format("%02d",diffCreate)+"d");
                         Dleft.setText(String.format("%02d",Days)+"d");
-                        Sdate.setText(goal_create.substring(0,10).trim());
-                        Edate.setText(goal_end.substring(0,10).trim());
-                        notes.setText(description);
+                        Sdate.setText(task_create.substring(0,10).trim());
+                        //Log.d("llllllllllllll","Edate.setText(task_end.substring(0,10).trim()); "+task_create.substring(0,10).trim());
+
+                        Edate.setText(task_end.substring(0,10).trim());
+                        //notes.setText(description);
                         left.setText(String.format("%02d",Days)+" days  "+String.format("%02d", Hours)+":"+String.format("%02d", Minutes)+":"+String.format("%02d", Seconds));
                         if(percent<=33) {
                             left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.red));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightred));
+                            //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightred));
                         }
                         else if(percent<=66)
                         {
                             left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.yellow));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightyellow));
+                            //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightyellow));
                         }
                         else
                         {
                             left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.green));
-                            rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightgreen));
+                            //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightgreen));
                         }
                     } else {
 

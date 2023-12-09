@@ -8,13 +8,17 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -61,6 +65,7 @@ public class InProgressFragment extends Fragment {
     private String mParam2;
     private ListView myListView1;
     private SparseArray<String> taskIdsMap1 = new SparseArray<>();
+    private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private ChipNavigationBar chipNavigationBar;
     ImageView profile_button;
     private ListView myListViewDone;
@@ -72,6 +77,8 @@ public class InProgressFragment extends Fragment {
     ArrayList<TimelineRow> timelineRowsList1;
     ArrayAdapter<TimelineRow> myAdapter1;
     TextView counter;
+    private EditText taskSearch;
+
     public InProgressFragment() {
         // Required empty public constructor
     }
@@ -126,6 +133,7 @@ public class InProgressFragment extends Fragment {
         loadData();
         myListView1 = (ListView) view.findViewById(R.id.timeline_listView1);
         counter = view.findViewById(R.id.counter);
+        taskSearch = (EditText) view.findViewById(R.id.goal_search);
 
         myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -143,6 +151,54 @@ public class InProgressFragment extends Fragment {
                 // finish();
             }
         });
+
+        taskSearch.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Creating new list of tasks based on the entered value in the taskSearch
+                ArrayList<TimelineRow> newTimelineRowsList = new ArrayList<>();
+                SparseArray<String> newTaskIdsMap = new SparseArray<>();
+
+                for (int i = 0; i < timelineRowsList1.size(); i++) {
+                    // Get the TimelineRow at position i
+                    TimelineRow row = timelineRowsList1.get(i);
+
+                    // Check if the entered text matches with the task name or description
+                    if (row.getTitle().toLowerCase().contains(editable.toString().toLowerCase()) ||
+                            row.getDescription().toLowerCase().contains(editable.toString().toLowerCase())) {
+                        // Add the matching TimelineRow to the new list
+                        newTimelineRowsList.add(row);
+
+                        // Map the position in the new list to the currentTaskId
+                        newTaskIdsMap.put(newTimelineRowsList.size() - 1, clonedTaskIdsMap.get(i));
+                    }
+                }
+                taskIdsMap1 = null;
+                taskIdsMap1 = newTaskIdsMap.clone();
+
+
+                // Update the adapter with the new list of TimelineRows
+                myAdapter1 = new TimelineViewAdapter(getContext(), 0, newTimelineRowsList,
+                        //if true, list will be sorted by date
+                        false);
+                myListView1.setAdapter(myAdapter1);
+                myAdapter1.notifyDataSetChanged();
+
+
+            }
+        });
+
         return view;
     }
     private void loadData() {
@@ -247,6 +303,10 @@ public class InProgressFragment extends Fragment {
                                 taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
                                 numberOfTasksInProgress++; // Incrémente le compteur pour les tâches en cours
 
+                            }
+                           // SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+                            for (int i = 0; i < taskIdsMap1.size(); i++) {
+                                clonedTaskIdsMap.put(taskIdsMap1.keyAt(i), taskIdsMap1.valueAt(i));
                             }
 
 

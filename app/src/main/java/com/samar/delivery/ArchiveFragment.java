@@ -8,12 +8,15 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -70,6 +73,8 @@ public class ArchiveFragment extends Fragment {
     private String currentUserEmail;
     private SparseArray<String> taskIdsMap = new SparseArray<>();
     TextView counter;
+    private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+    private EditText taskSearch;
 
     public ArchiveFragment() {
         // Required empty public constructor
@@ -110,6 +115,7 @@ public class ArchiveFragment extends Fragment {
 
         // Get the ListView and Bind it with the Timeline Adapter
         myListViewDone = (ListView) view.findViewById(R.id.timeline_listViewDone);
+        taskSearch = (EditText) view.findViewById(R.id.goal_search);
         counter = view.findViewById(R.id.counter);
 // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -141,7 +147,52 @@ public class ArchiveFragment extends Fragment {
                 // finish();
             }
         });
+        taskSearch.addTextChangedListener(new TextWatcher() {
 
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                // Creating new list of tasks based on the entered value in the taskSearch
+                ArrayList<TimelineRow> newTimelineRowsList = new ArrayList<>();
+                SparseArray<String> newTaskIdsMap = new SparseArray<>();
+
+                for (int i = 0; i < timelineRowsListDone.size(); i++) {
+                    // Get the TimelineRow at position i
+                    TimelineRow row = timelineRowsListDone.get(i);
+
+                    // Check if the entered text matches with the task name or description
+                    if (row.getTitle().toLowerCase().contains(editable.toString().toLowerCase()) ||
+                            row.getDescription().toLowerCase().contains(editable.toString().toLowerCase())) {
+                        // Add the matching TimelineRow to the new list
+                        newTimelineRowsList.add(row);
+
+                        // Map the position in the new list to the currentTaskId
+                        newTaskIdsMap.put(newTimelineRowsList.size() - 1, clonedTaskIdsMap.get(i));
+                    }
+                }
+                taskIdsMap = null;
+                taskIdsMap = newTaskIdsMap.clone();
+
+
+                // Update the adapter with the new list of TimelineRows
+                myAdapterDone = new TimelineViewAdapter(getContext(), 0, newTimelineRowsList,
+                        //if true, list will be sorted by date
+                        false);
+                myListViewDone.setAdapter(myAdapterDone);
+                myAdapterDone.notifyDataSetChanged();
+
+
+            }
+        });
         return view;
     }
     private void loadData() {
@@ -259,7 +310,10 @@ public class ArchiveFragment extends Fragment {
                                 }
 
 
-
+// SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+                            for (int i = 0; i < taskIdsMap.size(); i++) {
+                                clonedTaskIdsMap.put(taskIdsMap.keyAt(i), taskIdsMap.valueAt(i));
+                            }
 
                         }
                     } else {

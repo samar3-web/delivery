@@ -529,14 +529,14 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
+   /* @Override
     protected void onPostResume() {
         super.onPostResume();
        // RetriveUserImage();
         chipNavigationBar.setItemSelected(R.id.nav_home,
                 true);
      //   loadData();
-    }
+    }*/
 
 
     //pour bien calculer la date de laiste view (remaining) par symmetric

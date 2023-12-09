@@ -75,6 +75,7 @@ public class ArchiveFragment extends Fragment {
     TextView counter;
     private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private EditText taskSearch;
+    public static final int REQUEST_TASK_DETAIL = 1;
 
     public ArchiveFragment() {
         // Required empty public constructor
@@ -143,7 +144,9 @@ public class ArchiveFragment extends Fragment {
                 Intent intent = new Intent(getContext(),TaskDetail.class);
                 String currentTaskId = taskIdsMap.get(position);
                 intent.putExtra("currentTaskid", currentTaskId);
-                startActivity(intent);
+                //startActivity(intent);
+                // Launch TaskDetail with startActivityForResult
+                startActivityForResult(intent, REQUEST_TASK_DETAIL);
                 // finish();
             }
         });

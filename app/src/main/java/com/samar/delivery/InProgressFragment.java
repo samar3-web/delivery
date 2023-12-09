@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -25,8 +26,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
@@ -144,8 +148,113 @@ public class InProgressFragment extends Fragment {
         if (user != null) {
 
             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-            firestore.collection("tasksCollection").get()
+            // Référence à votre collection Firestore
+            CollectionReference tasksCollection = firestore.collection("tasksCollection");
+
+// Utiliser addSnapshotListener pour écouter les modifications en temps réel
+            tasksCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w("FirestoreListener", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (snapshot != null && !snapshot.isEmpty()) {
+                        // La collection a été modifiée, mettre à jour les données dans votre application
+
+                        timelineRowsList1.clear();
+                        tasks = new ArrayList<>();
+
+                        for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                            // Votre code pour extraire les données et mettre à jour l'interface utilisateur
+                            // ...
+                            String currentTaskId = doc.getId();
+
+// Create new timeline row (Row Id)
+                            TimelineRow myRow = new TimelineRow(0);
+
+// To set the row Date (optional)
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                            try {
+                                // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
+                                String d = doc.get("heureDateDebutPrevu").toString()+":00";
+
+                                Date date = dateFormat.parse(d);
+                                Date dateSymitric = calculateSymmetricDate(date);
+                                myRow.setDate(dateSymitric);
+                                myRow.setDateColor(Color.argb(255, 30, 100, 0));
+                            } catch (ParseException ex) {
+                                throw new RuntimeException(ex);
+                            }
+// To set the row Title (optional)
+                            /*myRow.setDate(new Date());*/
+                            myRow.setTitle(doc.get("name").toString());
+// To set the row Description (optional)
+                            myRow.setDescription(doc.get("description").toString());
+// To set the row bitmap image (optional)
+                            myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
+
+// To set row Below Line Size in dp (optional)
+                            myRow.setBellowLineSize(6);
+// To set row Image Size in dp (optional)
+                            myRow.setImageSize(30);
+// To set background color of the row image (optional)
+                            switch (doc.get("priority").toString()) {
+                                case "basse":
+                                    myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 30, 100, 0));
+
+                                    break;
+                                case "moyenne":
+                                    myRow.setBackgroundColor(Color.argb(255, 255, 165, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 255, 165, 0));
+                                    break;
+                                case "haute":
+                                    myRow.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 255, 0, 0));
+                                    break;
+                                default:
+                                    System.out.println("Priorité non valide");
+                            }
+                            // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+// To set the Background Size of the row image in dp (optional)
+                            myRow.setBackgroundSize(40);
+// To set row Date text color (optional)
+                            myRow.setDateColor(Color.argb(255, 0, 0, 0));
+// To set row Title text color (optional)
+                            myRow.setTitleColor(Color.argb(255, 0, 0, 0));
+// To set row Description text color (optional)
+                            myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
+
+// Add the new row to the list
+                            if(doc.get("status").toString().equals("en cours")){
+                                timelineRowsList1.add(myRow);
+                                // Map the currentTaskId to the position in the list
+                                taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
+
+                            }
+
+
+
+                        }
+                    } else {
+                        Log.d("FirestoreListener", "Current data: null");
+                    }
+                    myAdapter1 = new TimelineViewAdapter(getContext(), 0, timelineRowsList1,
+                            //if true, list will be sorted by date
+                            false);
+                    myListView1.setAdapter(myAdapter1);
+                    myAdapter1.notifyDataSetChanged();
+                }
+            });
+           /* firestore.collection("tasksCollection").get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
                         @Override
                         public void onComplete(Task<QuerySnapshot> task) {
                             Log.d("xxxxxdocs", "onComplete: of task data fetching " + task.getResult().getDocuments());
@@ -153,90 +262,16 @@ public class InProgressFragment extends Fragment {
 
                             for (DocumentSnapshot doc : task.getResult().getDocuments()) {
 
-                                String currentTaskId = doc.getId();
-
-// Create new timeline row (Row Id)
-                                TimelineRow myRow = new TimelineRow(0);
-
-// To set the row Date (optional)
-
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                try {
-                                    // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
-                                    String d = doc.get("heureDateDebutPrevu").toString()+":00";
-
-                                    Date date = dateFormat.parse(d);
-                                    Date dateSymitric = calculateSymmetricDate(date);
-                                    myRow.setDate(dateSymitric);
-                                    myRow.setDateColor(Color.argb(255, 30, 100, 0));
-                                } catch (ParseException e) {
-                                    throw new RuntimeException(e);
-                                }
-// To set the row Title (optional)
-                                /*myRow.setDate(new Date());*/
-                                myRow.setTitle(doc.get("name").toString());
-// To set the row Description (optional)
-                                myRow.setDescription(doc.get("description").toString());
-// To set the row bitmap image (optional)
-                                myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
-
-// To set row Below Line Size in dp (optional)
-                                myRow.setBellowLineSize(6);
-// To set row Image Size in dp (optional)
-                                myRow.setImageSize(30);
-// To set background color of the row image (optional)
-                                switch (doc.get("priority").toString()) {
-                                    case "basse":
-                                        myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 30, 100, 0));
-
-                                        break;
-                                    case "moyenne":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 165, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 165, 0));
-                                        break;
-                                    case "haute":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 0, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 0, 0));
-                                        break;
-                                    default:
-                                        System.out.println("Priorité non valide");
-                                }
-                                // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
-// To set the Background Size of the row image in dp (optional)
-                                myRow.setBackgroundSize(40);
-// To set row Date text color (optional)
-                                myRow.setDateColor(Color.argb(255, 0, 0, 0));
-// To set row Title text color (optional)
-                                myRow.setTitleColor(Color.argb(255, 0, 0, 0));
-// To set row Description text color (optional)
-                                myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
-
-// Add the new row to the list
-                                if(doc.get("status").toString().equals("en cours")){
-                                    timelineRowsList1.add(myRow);
-                                    // Map the currentTaskId to the position in the list
-                                    taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
-
-                                }
-
-
 
                             }
-                            myAdapter1 = new TimelineViewAdapter(getContext(), 0, timelineRowsList1,
-                                    //if true, list will be sorted by date
-                                    false);
-                            myListView1.setAdapter(myAdapter1);
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(Exception e) {
                             Log.d("xxxxx", "onFailure: of HouseData fectching " + e.getLocalizedMessage());
                         }
-                    });
+                    });*/
 
 
         } else {

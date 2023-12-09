@@ -3,6 +3,7 @@ package com.samar.delivery;
 import static android.app.PendingIntent.getActivity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,8 +47,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.rd.PageIndicatorView;
@@ -422,7 +426,7 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
-    private void RetriveUserImage() {
+    /*private void RetriveUserImage() {
         // Getting profile picture to set in the profile button
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
@@ -450,7 +454,43 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
      
+    }*/
+    private void RetriveUserImage() {
+        // Getting profile picture to set in the profile button
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+
+        currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        DocumentReference userDocument = firebaseFirestore.collection("USERDATA").document(currentUserEmail);
+
+        // Utiliser addSnapshotListener pour écouter les modifications en temps réel
+        userDocument.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("FirestoreListener", "Listen failed.", e);
+                    return;
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    // Document a été modifié, mettre à jour l'image dans votre application
+
+                    try {
+                        String profileUrl = snapshot.getString("profileUrl");
+
+                        if (profileUrl != null && !profileUrl.isEmpty()) {
+                            // Si l'URL n'est pas nulle, alors ajoutez l'image
+                            Picasso.get().load(profileUrl).placeholder(R.drawable.profile).error(R.drawable.profile).into(profile_button);
+                        }
+                    } catch (Exception ex) {
+                        Log.d("xxxxxxx", "Exception in setting data to profile : " + ex.getLocalizedMessage());
+                    }
+                } else {
+                    Log.d("FirestoreListener", "Current data: null");
+                }
+            }
+        });
     }
+
     private void bottomMenu() {
         chipNavigationBar.setOnItemSelectedListener
                 (new ChipNavigationBar.OnItemSelectedListener() {
@@ -492,7 +532,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        RetriveUserImage();
+       // RetriveUserImage();
         chipNavigationBar.setItemSelected(R.id.nav_home,
                 true);
      //   loadData();

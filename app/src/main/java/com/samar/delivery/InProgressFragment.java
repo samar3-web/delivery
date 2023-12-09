@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,6 +71,7 @@ public class InProgressFragment extends Fragment {
     private String currentUserEmail;
     ArrayList<TimelineRow> timelineRowsList1;
     ArrayAdapter<TimelineRow> myAdapter1;
+    TextView counter;
     public InProgressFragment() {
         // Required empty public constructor
     }
@@ -123,6 +125,7 @@ public class InProgressFragment extends Fragment {
         timelineRowsList1 = new ArrayList<>();
         loadData();
         myListView1 = (ListView) view.findViewById(R.id.timeline_listView1);
+        counter = view.findViewById(R.id.counter);
 
         myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -159,8 +162,14 @@ public class InProgressFragment extends Fragment {
                         Log.w("FirestoreListener", "Listen failed.", e);
                         return;
                     }
-
+                    if (!isAdded()) {
+                        // Le fragment n'est pas attaché à une activité
+                        return;
+                    }
+                    int numberOfTasksInProgress = 0; // Compteur pour les tâches en cours
                     if (snapshot != null && !snapshot.isEmpty()) {
+
+
                         // La collection a été modifiée, mettre à jour les données dans votre application
 
                         timelineRowsList1.clear();
@@ -236,6 +245,7 @@ public class InProgressFragment extends Fragment {
                                 timelineRowsList1.add(myRow);
                                 // Map the currentTaskId to the position in the list
                                 taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
+                                numberOfTasksInProgress++; // Incrémente le compteur pour les tâches en cours
 
                             }
 
@@ -250,6 +260,13 @@ public class InProgressFragment extends Fragment {
                             false);
                     myListView1.setAdapter(myAdapter1);
                     myAdapter1.notifyDataSetChanged();
+                    // Afficher le compteur dans votre TextView
+                    if (numberOfTasksInProgress > 0) {
+                        counter.setVisibility(View.VISIBLE);
+                        counter.setText("Total Tasks in Progress : " + numberOfTasksInProgress);
+                    } else {
+                        counter.setVisibility(View.GONE);
+                    }
                 }
             });
            /* firestore.collection("tasksCollection").get()

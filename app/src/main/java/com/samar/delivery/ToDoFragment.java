@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -70,6 +71,7 @@ public class ToDoFragment extends Fragment {
     private String currentUserEmail;
     ArrayList<TimelineRow> timelineRowsList;
     ArrayAdapter<TimelineRow> myAdapter;
+    TextView counter;
 
     public ToDoFragment() {
         // Required empty public constructor
@@ -125,6 +127,7 @@ public class ToDoFragment extends Fragment {
         timelineRowsList = new ArrayList<>();
         loadData();
         myListView = (ListView) view.findViewById(R.id.timeline_listView);
+        counter = view.findViewById(R.id.counter);
 
         myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -161,6 +164,11 @@ public class ToDoFragment extends Fragment {
                         Log.w("FirestoreListener", "Listen failed.", e);
                         return;
                     }
+                    if (!isAdded()) {
+                        // Le fragment n'est pas attaché à une activité
+                        return;
+                    }
+                    int numberOfTasksToDO = 0;
 
                     if (snapshot != null && !snapshot.isEmpty()) {
                         // La collection a été modifiée, mettre à jour les données dans votre application
@@ -238,6 +246,7 @@ public class ToDoFragment extends Fragment {
                                 timelineRowsList.add(myRow);
                                 // Map the currentTaskId to the position in the list
                                 taskIdsMap.put(timelineRowsList.size() - 1, currentTaskId);
+                                numberOfTasksToDO++;
 
                             }
 
@@ -252,6 +261,13 @@ public class ToDoFragment extends Fragment {
                             false);
                     myListView.setAdapter(myAdapter);
                     myAdapter.notifyDataSetChanged();
+                    // Afficher le compteur dans votre TextView
+                    if (numberOfTasksToDO > 0) {
+                        counter.setVisibility(View.VISIBLE);
+                        counter.setText("Total Tasks Done : " + numberOfTasksToDO);
+                    } else {
+                        counter.setVisibility(View.GONE);
+                    }
                 }
 
             });

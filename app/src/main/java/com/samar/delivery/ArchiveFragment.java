@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -68,6 +69,7 @@ public class ArchiveFragment extends Fragment {
     private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
     private SparseArray<String> taskIdsMap = new SparseArray<>();
+    TextView counter;
 
     public ArchiveFragment() {
         // Required empty public constructor
@@ -108,6 +110,7 @@ public class ArchiveFragment extends Fragment {
 
         // Get the ListView and Bind it with the Timeline Adapter
         myListViewDone = (ListView) view.findViewById(R.id.timeline_listViewDone);
+        counter = view.findViewById(R.id.counter);
 // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -157,6 +160,11 @@ public class ArchiveFragment extends Fragment {
                         Log.w("FirestoreListener", "Listen failed.", e);
                         return;
                     }
+                    if (!isAdded()) {
+                        // Le fragment n'est pas attaché à une activité
+                        return;
+                    }
+                    int numberOfTasksDone = 0;
 
                     if (snapshot != null && !snapshot.isEmpty()) {
                         // La collection a été modifiée, mettre à jour les données dans votre application
@@ -247,6 +255,7 @@ public class ArchiveFragment extends Fragment {
                                     timelineRowsListDone.add(myRow);
                                     // Map the currentTaskId to the position in the list
                                     taskIdsMap.put(timelineRowsListDone.size() - 1, currentTaskId);
+                                    numberOfTasksDone++; // Incrémente le compteur pour les tâches faite
                                 }
 
 
@@ -262,6 +271,13 @@ public class ArchiveFragment extends Fragment {
                                     false);
                             myListViewDone.setAdapter(myAdapterDone);
                     myAdapterDone.notifyDataSetChanged();
+                    // Afficher le compteur dans votre TextView
+                    if (numberOfTasksDone > 0) {
+                        counter.setVisibility(View.VISIBLE);
+                        counter.setText("Total Tasks Done : " + numberOfTasksDone);
+                    } else {
+                        counter.setVisibility(View.GONE);
+                    }
 
                 }
 

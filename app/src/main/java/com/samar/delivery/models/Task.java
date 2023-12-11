@@ -1,5 +1,7 @@
 package com.samar.delivery.models;
 
+import java.util.List;
+
 public class Task {
     private String id;
     private String libelle;
@@ -10,6 +12,10 @@ public class Task {
     private String heureDateFinPrevu;
     private String heureDateDebutReelle;
     private String heureDateFinReelle;
+    private Double latitude;
+    private Double longitude;
+    private List<String> fileUrls;
+
 
     public Task() {
     }
@@ -84,5 +90,29 @@ public class Task {
 
     public void setHeureDateFinReelle(String heureDateFinReelle) {
         this.heureDateFinReelle = heureDateFinReelle;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public List<String> getFileUrls() {
+        return fileUrls;
+    }
+
+    public void setFileUrls(List<String> fileUrls) {
+        this.fileUrls = fileUrls;
     }
 }

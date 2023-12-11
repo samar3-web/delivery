@@ -94,7 +94,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         Window window = getWindow();
-        window.setNavigationBarColor(Color.parseColor("#3a67ff"));
+        window.setNavigationBarColor(getColor(R.color.blue));
 
 
         InitializationMethod();
@@ -368,31 +368,11 @@ public class ProfileActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Uri> task) {
                             if (task.isSuccessful()) {
 
-
-
-
-
-
-                              //  documentReference.
-
-
-                                // Setting the image url as the user_image property of the user in the database
                                 String pfpUrl = task.getResult().toString();
 
                                 documentReference.update("profileUrl", pfpUrl);
                                 progressDialog.dismiss();
-                            //    reference.child(userID).child("profileUrl").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
-                               /* reference.child(userID).child("profileUrl").setValue(pfpUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        progressDialog.dismiss();
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(ProfileActivity.this, "Profile picture updated", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(ProfileActivity.this, "Failed to update profile picture", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });*/
+
                             } else {
                                 progressDialog.dismiss();
                                 Toast.makeText(ProfileActivity.this, "Failed to update profile picture", Toast.LENGTH_SHORT).show();

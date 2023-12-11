@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4FAFF"
+    android:background="@color/colorTheme1"
     tools:context=".ProfileActivity">
 
     <RelativeLayout
@@ -207,7 +207,7 @@
         android:text="Log Out"
         android:textAllCaps="false"
         android:layout_marginTop="20dp"
-        android:textColor="@color/white"
+        android:textColor="@color/colorTheme1"
         android:textSize="18dp"
         android:layout_gravity="center_horizontal"/>
 

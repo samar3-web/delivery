@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorTheme1"
     tools:context=".TaskDetail">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,11 +15,10 @@
 
 
         <RelativeLayout
+            android:id="@+id/relative_for_snap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorTheme1"
-            android:id="@+id/relative_for_snap">
-
+            android:background="@color/colorTheme1">
 
 
             <LinearLayout
@@ -121,20 +121,19 @@
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
-                                    android:orientation="vertical"
                                     android:layout_margin="5dp"
-                                   >
+                                    android:orientation="vertical">
 
                                     <TextView
                                         android:id="@+id/desc_task_left"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
+                                        android:maxWidth="240dp"
                                         android:text="Remaining Time"
-                                        android:textStyle="bold"
                                         android:textColor="@color/black"
                                         android:textSize="15sp"
-                                        android:typeface="sans"
-                                        android:maxWidth="240dp"/>
+                                        android:textStyle="bold"
+                                        android:typeface="sans" />
 
 
                                 </LinearLayout>
@@ -147,11 +146,9 @@
                                 android:layout_height="30dp"
                                 android:layout_marginStart="10dp"
                                 android:onClick="AlarmAct"
-                                android:src="@drawable/ic_baseline_access_alarms_24"/>
+                                android:src="@drawable/ic_baseline_access_alarms_24" />
 
                         </LinearLayout>
-
-
 
 
                     </RelativeLayout>
@@ -204,18 +201,17 @@
 
                     <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/fabButton"
-                        android:backgroundTint="@color/blue"
-                        android:background="@color/blue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_alignParentBottom="true"
+                        android:layout_centerHorizontal="true"
+                        android:background="@color/blue"
+                        android:backgroundTint="@color/blue"
                         android:src="@android:drawable/ic_dialog_map"
+                        app:borderWidth="0dp"
                         app:rippleColor="@color/white"
-                        app:tint="@color/white"
-                        app:borderWidth="0dp" />
+                        app:tint="@color/white" />
                 </RelativeLayout>
-
 
 
             </LinearLayout>
@@ -224,17 +220,94 @@
         </RelativeLayout>
 
 
+        <LinearLayout
+            android:id="@+id/streakNote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardBackgroundColor="@color/colorTheme4"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="5dp"
+                app:cardMaxElevation="12dp"
+                app:cardPreventCornerOverlap="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/show_logs"
+                app:layout_constraintVertical_bias="0.151">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_margin="5dp"
+
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:weightSum="10">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_weight="8"
+                            android:text="Piéces jointes"
+                            android:textColor="@color/colorTheme2"
+                            android:textSize="17dp"
+                            android:textStyle="bold" />
 
 
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/newFile"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:src="@drawable/addnew" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <ListView
+                        android:id="@+id/fileUrlsListView"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginTop="25dp" />
+
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/history_calendarViewGroup"
             android:layout_width="match_parent"
-            android:gravity="center"
-            android:layout_above="@+id/below_layout"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_above="@+id/below_layout"
             android:layout_below="@id/relative_for_snap"
+            android:layout_margin="20dp"
+            android:gravity="center"
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
@@ -409,13 +482,14 @@
 
 
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:background="@color/white"
-                app:cardCornerRadius="10dp"
-                android:visibility="gone">
+                android:visibility="gone"
+                app:cardCornerRadius="10dp">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -430,8 +504,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="400dp"
                     android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="30dp"
+                    android:layout_marginEnd="20dp"
                     android:background="@drawable/calendar_background"
                     android:contentDescription="Target date"
                     tools:context=".DashboardActivity" />
@@ -463,8 +537,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="5dp">
+                    android:layout_margin="5dp"
+                    android:orientation="vertical">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -482,22 +556,20 @@
                             android:textStyle="bold" />
 
 
-
-
                     </RelativeLayout>
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/colorTheme1"
                         android:layout_margin="8dp"
+                        android:background="@color/colorTheme1"
                         app:cardCornerRadius="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@color/colorTheme1">
+                            android:background="@color/colorTheme1"
+                            android:orientation="vertical">
 
 
                             <RelativeLayout
@@ -629,105 +701,11 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/streakNote"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                app:cardBackgroundColor="@color/colorTheme4"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="5dp"
-                app:cardMaxElevation="12dp"
-                app:cardPreventCornerOverlap="true"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/show_logs"
-                app:layout_constraintVertical_bias="0.151">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_margin="5dp">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginLeft="10dp"
-                            android:text="Piéces jointes"
-                            android:textColor="@color/colorTheme2"
-                            android:textSize="17dp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginEnd="6dp"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:id="@+id/newNote"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginLeft="20dp"
-                                android:layout_marginEnd="10dp"
-                                android:src="@drawable/addnew" />
-
-
-                        </LinearLayout>
-
-
-                    </RelativeLayout>
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:layout_margin="8dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            >
-
-
-
-                        </LinearLayout>
-
-
-                    </androidx.cardview.widget.CardView>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-
-        </LinearLayout>
 
         <RelativeLayout
+            android:id="@+id/below_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/below_layout"
             android:layout_alignParentBottom="true">
 
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+    <TextView
+        android:id="@+id/textFileName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:ellipsize="end"/>
+
+   <!-- <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end">
+
+        <ImageView
+            android:id="@+id/show"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/afficher" />
+
+        <ImageView
+            android:id="@+id/button_supprimer"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@android:drawable/ic_delete"
+            android:onClick="test"
+            />
+
+    </LinearLayout>-->
+</LinearLayout>

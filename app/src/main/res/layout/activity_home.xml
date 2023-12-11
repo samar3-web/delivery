@@ -93,7 +93,8 @@
             android:layout_height="match_parent"
             android:layout_above="@id/bottom_nav_bar"
             android:layout_below="@id/handlee"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/colorTheme1">
         </LinearLayout>
 
 
@@ -216,7 +217,7 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         android:background="#fff"
-        android:backgroundTint="#3a67ff"
+        android:backgroundTint="@color/blue"
         android:fadingEdge="horizontal"
         app:cnb_menuResource="@menu/menu"
         app:cnb_unselectedColor="@android:color/white" />

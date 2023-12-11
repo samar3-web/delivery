@@ -97,110 +97,14 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         Window window = getWindow();
-        window.setNavigationBarColor(Color.parseColor("#3a67ff"));
+        window.setNavigationBarColor(getColor(R.color.blue));
 
 
-        /*linearLayout1 = findViewById(R.id.linearLayout1);
-        linearLayout2 = findViewById(R.id.linearLayout2);*/
-        /* pageIndicatorView = findViewById(R.id.pageIndicatorView);
-        pageIndicatorView.setCount(2); // specify total count of indicators
-        pageIndicatorView.clearSelection();
-        pageIndicatorView.setSelection(0);
-
-        pageIndicatorView.setAnimationType(AnimationType.WORM);*/
-
-       /* linearLayout1.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    startX = event.getX();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    endX = event.getX();
-
-                    float deltaX = endX - startX;
-                    Log.d("lllllllllll11111111111","deltaX :"+deltaX+" yyyyy "+pageIndicatorView.getSelection());
-
-                    if (deltaX < 0) {
-                        // Swipe de gauche à droite
-                        linearLayout1.animate()
-                                .alpha(0.0f)
-                                .translationX(-linearLayout1.getWidth())
-                                .setDuration(1000)
-                                .start();
-                        Log.d("01","deltaX :"+deltaX);
-                        linearLayout2.animate()
-                                .alpha(1.0f)
-                                .translationX(0)
-                                .setDuration(1000)
-                                .start();
-                        Log.d("02","deltaX :"+deltaX);
-
-
-                        linearLayout1.setVisibility(View.GONE);
-                        linearLayout2.setVisibility(View.VISIBLE);
-                        pageIndicatorView.clearSelection();
-                        pageIndicatorView.setSelection(1);
-                    }
-                }
-
-                return true;
-            }
-
-            private float startX;
-            private float endX;
-        });
-        linearLayout2.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    startX = event.getX();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    endX = event.getX();
-
-                    float deltaX = endX - startX;
-                    Log.d("lllllllllll2222222222","deltaX :"+deltaX+" yyyyy ");
-                    if (deltaX > 0)  {
-                        // Swipe de droite à gauche
-                        linearLayout2.animate()
-                                .alpha(0.0f)
-                                .translationX(linearLayout2.getWidth())
-                                .setDuration(1000)
-                                .start();
-                        Log.d("07","deltaX :"+deltaX);
-
-                        linearLayout1.animate()
-                                .alpha(1.0f)
-                                .translationX(0)
-                                .setDuration(1000)
-                                .start();
-                        Log.d("08","deltaX :"+deltaX);
-                        linearLayout2.setVisibility(View.GONE);
-                        linearLayout1.setVisibility(View.VISIBLE);
-                        pageIndicatorView.clearSelection();
-                        pageIndicatorView.setSelection(0);
-                    }
-                }
-
-                return true;
-            }
-
-            private float startX;
-            private float endX;
-        });*/
-
-       /* // Initialiser la visibilité des LinearLayout
-        linearLayout1.setVisibility(View.VISIBLE);
-        linearLayout2.setVisibility(View.GONE);*/
 
         chipNavigationBar = findViewById(R.id.bottom_nav_bar);
         chipNavigationBar.setItemSelected(R.id.nav_home,
                 true);
         profile_button = findViewById(R.id.logout_btn);
-     //   gestureDetector = new GestureDetector(this, new SwipeGestureDetector());
-
-        // Get the ListView and Bind it with the Timeline Adapter
-        /*myListView = (ListView) findViewById(R.id.timeline_listView);
-        myListView1 = (ListView) findViewById(R.id.timeline_listView1);*/
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frag_container_nav,
@@ -219,13 +123,6 @@ public class HomeActivity extends AppCompatActivity {
 
         RetriveUserImage();
 
-       // recyclerViewToDo = findViewById(R.id.recyclerViewToDo);
-
-
-        //recyclerViewInProgress = findViewById(R.id.recyclerViewInProgress);
-        //recyclerViewDelivered = findViewById(R.id.recyclerViewDelivered);
-
-      //  my_rcv = findViewById(R.id.recyclerViewToDo);
 
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -236,54 +133,6 @@ public class HomeActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference("tasksCollection");
 
 
-        //setupRecyclerView();
-
-
-// Create Timeline rows List
-        /*timelineRowsList = new ArrayList<>();
-        timelineRowsList1 = new ArrayList<>();*/
-        //loadData();
-
-       // Log.d("aaaaaaaaaaaaaaaa","timelineRowsList.size() : "+timelineRowsList.size());
-// Create the Timeline Adapter
-
-
-
-       // String currentTaskid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        /*myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the item that was clicked
-                TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
-                Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
-                // Retrieve the currentTaskId using the mapping
-                String currentTaskId = taskIdsMap.get(position);
-                intent.putExtra("currentTaskid", currentTaskId);
-                startActivity(intent);
-                Log.d("iiiiiiiiiiid",currentTaskId);
-
-                // finish();
-            }
-        });
-
-        myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the item that was clicked
-                TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
-                Toast.makeText(HomeActivity.this, row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(HomeActivity.this,TaskDetail.class);
-                // Retrieve the currentTaskId using the mapping
-                String currentTaskId = taskIdsMap1.get(position);
-                intent.putExtra("currentTaskid", currentTaskId);
-
-                Log.d("iiiiiiiiiiid",currentTaskId);
-                startActivity(intent);
-                // finish();
-            }
-        });*/
 
     }
     private void setupRecyclerView() {
@@ -529,18 +378,6 @@ public class HomeActivity extends AppCompatActivity {
                 });
     }
 
-   /* @Override
-    protected void onPostResume() {
-        super.onPostResume();
-       // RetriveUserImage();
-        chipNavigationBar.setItemSelected(R.id.nav_home,
-                true);
-     //   loadData();
-    }*/
-
-
-    //pour bien calculer la date de laiste view (remaining) par symmetric
-
     public static Date calculateSymmetricDate(Date givenDate) {
         if (givenDate == null) {
             // Retourne la date actuelle si givenDate est null
@@ -568,7 +405,11 @@ public class HomeActivity extends AppCompatActivity {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
                             finish();*/
-                            onDestroy();
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_HOME);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                           //onDestroy();
                         }
                     })
                     .setNegativeButton("No", null)
@@ -576,7 +417,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+    /*@Override
     protected void onDestroy() {
         super.onDestroy();
         Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -584,7 +425,7 @@ public class HomeActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finishAffinity();
-    }
+    }*/
 
     }
 

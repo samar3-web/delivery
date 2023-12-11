@@ -5,7 +5,7 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4FAFF"
+    android:background="@color/colorTheme1"
     tools:context=".TaskDetail">
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#E1F1FF"
+            android:background="@color/colorTheme1"
             android:id="@+id/relative_for_snap">
 
 
@@ -36,7 +36,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="230dp"
                     android:background="@drawable/back_for_dash"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:padding="10dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -121,7 +122,8 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:orientation="vertical"
-                                    android:layout_margin="5dp">
+                                    android:layout_margin="5dp"
+                                   >
 
                                     <TextView
                                         android:id="@+id/desc_task_left"
@@ -186,7 +188,7 @@
                             android:layout_margin="20dp"
                             android:layout_marginTop="180dp"
                             android:padding="20dp"
-                            app:cardBackgroundColor="@color/white"
+                            app:cardBackgroundColor="@color/colorTheme3"
                             app:cardCornerRadius="20dp"
                             app:cardElevation="10dp"
                             app:cardMaxElevation="12dp"
@@ -447,9 +449,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                app:cardBackgroundColor="#E1F1FF"
+                app:cardBackgroundColor="@color/colorTheme4"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
+                app:cardElevation="0dp"
                 app:cardMaxElevation="12dp"
                 app:cardPreventCornerOverlap="true"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -475,7 +477,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
                             android:text="Aperçu de la séquence"
-                            android:textColor="@color/black"
+                            android:textColor="@color/colorTheme2"
                             android:textSize="17dp"
                             android:textStyle="bold" />
 
@@ -487,15 +489,15 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/white"
+                        android:background="@color/colorTheme1"
                         android:layout_margin="8dp"
-                        app:cardCornerRadius="10dp"
-                        app:cardElevation="0dp">
+                        app:cardCornerRadius="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            android:background="@color/colorTheme1">
 
 
                             <RelativeLayout
@@ -509,7 +511,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="Jours totaux"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp" />
 
                                 <TextView
@@ -520,7 +522,7 @@
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginEnd="10dp"
                                     android:text="00"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp"
                                     android:textStyle="bold" />
 
@@ -538,7 +540,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="Jours restants"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp" />
 
                                 <TextView
@@ -549,7 +551,7 @@
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginEnd="10dp"
                                     android:text="1d"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp"
                                     android:textStyle="bold" />
 
@@ -567,7 +569,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="Date de début"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp" />
 
                                 <TextView
@@ -578,7 +580,7 @@
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginEnd="10dp"
                                     android:text="12.02.21"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp"
                                     android:textStyle="bold" />
 
@@ -596,7 +598,7 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="Date de fin"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp" />
 
                                 <TextView
@@ -607,7 +609,7 @@
                                     android:layout_marginLeft="20dp"
                                     android:layout_marginEnd="10dp"
                                     android:text="12.02.21"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/colorTheme2"
                                     android:textSize="17dp"
                                     android:textStyle="bold" />
 
@@ -631,16 +633,15 @@
             android:id="@+id/streakNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:background="#E1F1FF">
+            android:layout_marginBottom="50dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                app:cardBackgroundColor="#E1F1FF"
+                app:cardBackgroundColor="@color/colorTheme4"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
+                app:cardElevation="5dp"
                 app:cardMaxElevation="12dp"
                 app:cardPreventCornerOverlap="true"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -666,7 +667,7 @@
                             android:layout_marginStart="10dp"
                             android:layout_marginLeft="10dp"
                             android:text="Piéces jointes"
-                            android:textColor="@color/black"
+                            android:textColor="@color/colorTheme2"
                             android:textSize="17dp"
                             android:textStyle="bold" />
 

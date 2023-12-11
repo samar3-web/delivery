@@ -1,4 +1,5 @@
 package com.samar.delivery;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.microsoft.maps.Geopoint;
 import com.microsoft.maps.MapAnimationKind;
 import com.microsoft.maps.MapElementLayer;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +22,10 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PointF;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -119,6 +124,10 @@ public class TaskDetail extends AppCompatActivity {
     private Runnable runnable;
     private static final String MY_API_KEY = "AlwLTKgevIemLkhFY8wA2oDQwpxY8SBBAR8a5dXymXDFKTmfGWKkXnJGQkGzXUMM";
     private MapView mapView;
+    private MapElementLayer mPinLayer;
+    private MapImage mPinImage;
+    private int mUntitledPushpinCount = 0;
+    private Geopoint geopoint;
     private ScrollView scrollView;
     ImageView extendedFloatingShareButton;
     ImageView extendedFloatingEditButton;
@@ -136,11 +145,15 @@ public class TaskDetail extends AppCompatActivity {
     private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String JUSTDATE_FORMAT = "yyyy-MM-dd";
     private String EVENT_DATE_TIME = "null";
+    private FloatingActionButton direction;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
+        Window window = getWindow();
+        window.setNavigationBarColor(getColor(R.color.blue));
         InitializationMethod();
         clearCalendar();
         id = getIntent().getStringExtra("currentTaskid");
@@ -172,6 +185,7 @@ public class TaskDetail extends AppCompatActivity {
         });
 
         //checkBreak();
+        direction = findViewById(R.id.fabButton);
         scrollView = findViewById(R.id.scrollView);
         mapView = findViewById(R.id.mapView);
         mapView.setCredentialsKey(MY_API_KEY);
@@ -199,7 +213,6 @@ public class TaskDetail extends AppCompatActivity {
                 return true;
             }
         });
-
 
 
 
@@ -434,6 +447,34 @@ public class TaskDetail extends AppCompatActivity {
                 if (documentSnapshot.get("heureDateDebutPrevu") != null)
                     Sdate.setText(documentSnapshot.get("heureDateDebutPrevu").toString());
 
+                mPinLayer = new MapElementLayer();
+                mapView.getLayers().add(mPinLayer);
+                mPinImage = getPinImage();
+                if ((documentSnapshot.contains("latitude")&&documentSnapshot.contains("longitude"))&&((documentSnapshot.get("latitude") != null) && (documentSnapshot.get("longitude") != null))) {
+                    geopoint = new Geopoint(Double.valueOf(documentSnapshot.get("latitude").toString()), Double.valueOf(documentSnapshot.get("longitude").toString()));
+                    addPin(geopoint, documentSnapshot.get("name").toString());
+                    mapView.setScene(
+                            MapScene.createFromLocationAndZoomLevel(geopoint, 15),
+                            MapAnimationKind.NONE);
+                    direction.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            //String uri = "http://maps.google.com/maps?saddr=" + myLatitude + "," + myLongitude + "&daddr=" + elementLatitude + "," + elementLongitude;
+                            String uri = "https://www.google.com/maps/dir/?api=1&destination=" + Double.valueOf(documentSnapshot.get("latitude").toString()) + "," + Double.valueOf(documentSnapshot.get("longitude").toString());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                            intent.setPackage("com.google.android.apps.maps");
+                            startActivity(intent);
+
+                        }
+                    });
+                }
+                else {
+
+                }
+
+
+
 
 
             }
@@ -449,7 +490,36 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
+    private MapImage getPinImage() {
+        // Create a pin image from a drawable resource
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_pin, null);
 
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return new MapImage(bitmap);
+    }
+    private void addPin(Geopoint location, String title) {
+        // Add a pin to the map at the given location
+        MapIcon pushpin = new MapIcon();
+        pushpin.setLocation(location);
+        pushpin.setTitle(title);
+        pushpin.setImage(mPinImage);
+
+        pushpin.setNormalizedAnchorPoint(new PointF(0.5f, 1f));
+        if (title.isEmpty()) {
+            pushpin.setContentDescription(String.format(
+                    Locale.ROOT,
+                    "Untitled pushpin %d",
+                    ++mUntitledPushpinCount));
+        }
+        mPinLayer.getElements().add(pushpin);
+    }
 
 
 

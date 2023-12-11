@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Dark theme colors -->
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="colorPrimary">#001223</color>
+    <color name="colorPrimaryDark">#001223</color>
+    <color name="colorAccent">#00A5FF</color>
+    <color name="gris">#808080</color>
+    <color name="text">#A9A9A9</color>
+    <color name="colorTheme1">#121212</color>
+    <color name="colorTheme2">#FFFFFF</color>
+    <color name="colorTheme3">#383838</color>
+    <color name="colorTheme4">#383838</color>
+
+    <!-- Colors for modern UI -->
+    <color name="whiteTextColor">#A9A9A9</color>
+    <color name="primaryTextColor">#00a5ff</color>
+    <color name="loginBkColor">#121212</color>
+
+    <!-- Colors for card -->
+    <color name="whiteCardColor">#121212</color>
+
+    <color name="red">#B22222</color>
+    <color name="blue">#002240</color>
+    <color name="dark_blue">#002240</color>
+    <color name="green">#006400</color>
+    <color name="lightgreen">#004d00</color>
+    <color name="lightyellow">#A9A900</color>
+    <color name="yellow">#DAA520</color>
+    <color name="lightred">#8B0000</color>
+    <color name="background_neumor">#121212</color>
+    <color name="theme_color">#000000</color>
+    <color name="orange">#FFA500</color>
+
+</resources>

@@ -290,11 +290,11 @@ public class InProgressFragment extends Fragment {
 // To set the Background Size of the row image in dp (optional)
                             myRow.setBackgroundSize(40);
 // To set row Date text color (optional)
-                            myRow.setDateColor(Color.argb(255, 0, 0, 0));
+                            myRow.setDateColor(getResources().getColor(R.color.colorTheme2));
 // To set row Title text color (optional)
-                            myRow.setTitleColor(Color.argb(255, 0, 0, 0));
+                            myRow.setTitleColor(getResources().getColor(R.color.colorTheme2));
 // To set row Description text color (optional)
-                            myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
+                            myRow.setDescriptionColor(getResources().getColor(R.color.colorTheme2));
 
 // Add the new row to the list
                             if(doc.get("status").toString().equals("en cours")){

@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Window window = getWindow();
-        window.setNavigationBarColor(Color.parseColor("#3a67ff"));
+        window.setNavigationBarColor(getColor(R.color.blue));
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
 

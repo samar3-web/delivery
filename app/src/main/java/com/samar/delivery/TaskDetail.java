@@ -1,29 +1,6 @@
 package com.samar.delivery;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.common.reflect.TypeToken;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.microsoft.maps.Geopoint;
-import com.microsoft.maps.MapAnimationKind;
-import com.microsoft.maps.MapElementLayer;
-import com.microsoft.maps.MapIcon;
-import com.microsoft.maps.MapImage;
-import com.microsoft.maps.MapScene;
-import com.microsoft.maps.MapView;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -43,30 +20,51 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.microsoft.maps.Geopoint;
+import com.microsoft.maps.MapAnimationKind;
+import com.microsoft.maps.MapElementLayer;
+import com.microsoft.maps.MapIcon;
+import com.microsoft.maps.MapImage;
+import com.microsoft.maps.MapScene;
+import com.microsoft.maps.MapView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,39 +72,29 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import sun.bob.mcalendarview.MCalendarView;
-import sun.bob.mcalendarview.vo.DateData;
-import sun.bob.mcalendarview.vo.MarkedDates;
 
 public class TaskDetail extends AppCompatActivity {
     private final int GALLERY_INTENT_CODE = 993;
     private final int CAMERA_INTENT_CODE = 990;
-    private static final int PDF_INTENT_CODE = 992; // You can choose any unique code
+    private static final int PDF_INTENT_CODE = 992;
 
-    List<com.samar.delivery.models.Task> tasks;
 
-    RecyclerView recyclerView;
-    TextView name,consis,left,task_lft_pert, notes;
+    TextView name, left;
     TextView Tdays, Dleft, Sdate, Edate;
-    RelativeLayout rel;
     String currentUserID;
-    String description;
     long Days;
     String task_end, task_create;
-    MCalendarView mCalendarView;
-    ArrayList<DateData> dataArrayList;
-    private StorageReference UserProfileImagesRef;
     ProgressDialog progressDialog;
-    DatabaseReference RootRef,HelloREf,newRef,notesRef;
-    @SuppressLint("SimpleDateFormat")
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    SimpleDateFormat justDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    DatabaseReference RootRef;
+
     private Handler handler = new Handler();
     private Runnable runnable;
     private static final String MY_API_KEY = "AlwLTKgevIemLkhFY8wA2oDQwpxY8SBBAR8a5dXymXDFKTmfGWKkXnJGQkGzXUMM";
@@ -116,19 +104,16 @@ public class TaskDetail extends AppCompatActivity {
     private int mUntitledPushpinCount = 0;
     private Geopoint geopoint;
     private ScrollView scrollView;
-    ImageView extendedFloatingShareButton;
-    ImageView extendedFloatingEditButton;
-    ImageView deleteTask, fileUploadButton, resetTask;
+
+    ImageView fileUploadButton;
     ImageButton add_img;
-    ImageView  Alarm;
+    ImageView Alarm;
     CircleImageView taskPic;
 
-    ImageView shareStreak;
     String TaskName;
     String id;
 
-    private WebView signatureWebView;
-    private static final int PICK_FILE_REQUEST_CODE = 1;
+
     private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String JUSTDATE_FORMAT = "yyyy-MM-dd";
     private String EVENT_DATE_TIME = "null";
@@ -137,9 +122,11 @@ public class TaskDetail extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
     private DocumentReference documentReference, taskReference;
     private List<String> fileUrls;
-    private ImageView button_supprimer;
     private ListenerRegistration documentSnapshotListener;
     private AlertDialog dialog;
+
+    private AppCompatCheckBox checkBox ;
+
 
     @SuppressLint({"ClickableViewAccessibility", "MissingInflatedId"})
     @Override
@@ -150,11 +137,10 @@ public class TaskDetail extends AppCompatActivity {
         window.setNavigationBarColor(getColor(R.color.blue));
         id = getIntent().getStringExtra("currentTaskid");
         InitializationMethod();
-        clearCalendar();
-
 
         RetriveData(id);
 
+        checkBox = findViewById(R.id.true_checkbox);
         fileUploadButton = findViewById(R.id.newFile);
         fileUploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,20 +150,8 @@ public class TaskDetail extends AppCompatActivity {
         });
 
 
-
-
         countDownStart();
 
-
-
-
-
-        /*add_img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowOptionsforProfilePic();
-            }
-        });*/
 
         //checkBreak();
         direction = findViewById(R.id.fabButton);
@@ -209,11 +183,65 @@ public class TaskDetail extends AppCompatActivity {
             }
         });
 
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+
+        {
+            @Override
+            public void onCheckedChanged (CompoundButton buttonView,boolean isChecked){
+                // Update the status of the task based on the checkbox state
+                if (isChecked) {
+                    // Checkbox is checked, update task status to "done"
+                    updateTaskStatus(id, "faite"); // Replace with your actual logic
+                } else {
+                    // Checkbox is unchecked, update task status to "in progress"
+                    updateTaskStatus(id, "en cours"); // Replace with your actual logic
+                }
+                // Start the home activity
+                Intent intent = new Intent(TaskDetail.this, HomeActivity.class);
+                startActivity(intent);
+
+                // Finish the current activity (optional)
+                finish();
+
+            }
+        });
 
 
     }
 
 
+
+    private void updateTaskStatus(String taskId, String newStatus) {
+        // Access the Firestore instance
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Reference to the tasks collection
+        CollectionReference tasksCollection = db.collection("tasksCollection");
+
+        // Reference to the specific task document
+        DocumentReference taskDocRef = tasksCollection.document(taskId);
+
+        // Create a Map to update the 'status' field
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", newStatus);
+
+        // Update the 'status' field of the task document
+        taskDocRef.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Task status updated successfully
+                        // You can add any additional logic here
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the failure to update the task status
+                        // You can add error handling logic here
+                    }
+                });
+    }
 
 
 
@@ -233,11 +261,11 @@ public class TaskDetail extends AppCompatActivity {
 
         Alarm = findViewById(R.id.alarm);
 
-        extendedFloatingEditButton = findViewById(R.id.edit_task_btn);
-        consis = findViewById(R.id.desc_task_const);
+        //extendedFloatingEditButton = findViewById(R.id.edit_task_btn);
+        //consis = findViewById(R.id.desc_task_const);
         left = findViewById(R.id.desc_task_left);
-        mCalendarView= findViewById(R.id.history_calendarView);
-        task_lft_pert = findViewById(R.id.desc_task_leftper);
+        //mCalendarView= findViewById(R.id.history_calendarView);
+        //task_lft_pert = findViewById(R.id.desc_task_leftper);
 
         add_img = findViewById(R.id.add_img);
         taskPic = findViewById(R.id.imageIcon);
@@ -324,14 +352,13 @@ public class TaskDetail extends AppCompatActivity {
                         }
                         task_create = documentSnapshot.get("heureDateFinPrevu").toString()+":00";;
                     }
-                    if (documentSnapshot.get("heureDateFinPrevu") != null){
-                        Edate.setText(documentSnapshot.get("heureDateFinPrevu").toString());
+                    if (documentSnapshot.get("heureFinReelle") != null){
+                        Edate.setText(documentSnapshot.get("heureFinReelle").toString());
                         EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
-                       // EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
                         task_end = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
                     }
-                    if (documentSnapshot.get("heureDateDebutPrevu") != null)
-                        Sdate.setText(documentSnapshot.get("heureDateDebutPrevu").toString());
+                    if (documentSnapshot.get("heureDebutReelle") != null)
+                        Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
 
                     mPinLayer = new MapElementLayer();
                     mapView.getLayers().add(mPinLayer);
@@ -421,23 +448,9 @@ public class TaskDetail extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        clearCalendar();
 //        progressDialog.dismiss();
     }
 
-    private void clearCalendar(){
-
-        MarkedDates markedDates= mCalendarView.getMarkedDates();
-
-        ArrayList<DateData> currDataList= markedDates.getAll();
-
-        for(int i=0; i<currDataList.size();i++){
-
-            DateData data= currDataList.get(i);
-
-            mCalendarView.unMarkDate(data.getYear(),data.getMonth(),data.getDay());
-        }
-    }
 
 
     private void countDownStart() {

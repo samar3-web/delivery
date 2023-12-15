@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/scrollView"
+    android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorTheme1"
     tools:context=".TaskDetail">
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -34,32 +38,16 @@
                 <LinearLayout
                     android:id="@+id/lr"
                     android:layout_width="match_parent"
-                    android:layout_height="230dp"
+                    android:layout_height="220dp"
                     android:background="@drawable/back_for_dash"
                     android:orientation="vertical"
-                    android:padding="10dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="end"
-                        android:orientation="horizontal"
-                        android:padding="5dp">
-
-                        <ImageView
-                            android:id="@+id/edit_task_btn"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:src="@drawable/edit2" />
-
-                    </LinearLayout>
+                    android:padding="5dp">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp">
+                        android:layout_marginTop="25dp">
 
 
                         <RelativeLayout
@@ -177,6 +165,7 @@
                         android:id="@+id/mapLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="-22dp"
                         android:orientation="horizontal">
 
                         <androidx.cardview.widget.CardView
@@ -224,7 +213,7 @@
             android:id="@+id/streakNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp">
+            android:layout_marginBottom="10dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -300,219 +289,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/history_calendarViewGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/below_layout"
-            android:layout_below="@id/relative_for_snap"
-            android:layout_margin="20dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview_main_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:layout_marginTop="180dp"
-                android:padding="20dp"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="10dp"
-                app:cardMaxElevation="12dp"
-                app:cardPreventCornerOverlap="true">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp">
-
-                </RelativeLayout>
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="30dp"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
-
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:paddingBottom="10dp">
-
-
-                        <org.eazegraph.lib.charts.PieChart
-                            android:id="@+id/piechart1"
-                            android:layout_width="130dp"
-                            android:layout_height="130dp"
-                            android:layout_marginTop="15dp"
-                            android:layout_weight="1"
-                            android:padding="8dp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-
-                            <TextView
-                                android:id="@+id/desc_task_const"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="56%"
-                                android:textColor="#0F9D58"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-
-                        </LinearLayout>
-
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_margin="12dp"
-                            app:cardCornerRadius="5dp">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="#D1EEF1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="2dp"
-                                    android:layout_marginTop="2dp"
-                                    android:layout_marginEnd="2dp"
-                                    android:layout_marginBottom="2dp"
-                                    android:text="Consistency"
-                                    android:textColor="#00838F" />
-
-
-                            </RelativeLayout>
-
-
-                        </androidx.cardview.widget.CardView>
-
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center_horizontal"
-                        android:orientation="vertical"
-                        android:paddingBottom="10dp">
-
-
-                        <org.eazegraph.lib.charts.PieChart
-                            android:id="@+id/piechart2"
-                            android:layout_width="130dp"
-                            android:layout_height="130dp"
-                            android:layout_marginTop="15dp"
-                            android:layout_weight="1"
-                            android:padding="8dp" />
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-
-                            <TextView
-                                android:id="@+id/desc_task_leftper"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center_vertical"
-                                android:text="25%"
-                                android:textColor="#4285F4"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-
-                        </LinearLayout>
-
-
-                        <androidx.cardview.widget.CardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_margin="12dp"
-                            app:cardCornerRadius="5dp">
-
-                            <RelativeLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="#D1EEF1">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="2dp"
-                                    android:text="Completed"
-                                    android:textColor="#00838F" />
-
-
-                            </RelativeLayout>
-
-
-                        </androidx.cardview.widget.CardView>
-
-
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@color/white"
-                android:visibility="gone"
-                app:cardCornerRadius="10dp">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
-
-                </RelativeLayout>
-
-
-                <sun.bob.mcalendarview.MCalendarView
-                    android:id="@+id/history_calendarView"
-                    android:layout_width="match_parent"
-                    android:layout_height="400dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/calendar_background"
-                    android:contentDescription="Target date"
-                    tools:context=".DashboardActivity" />
-
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/streakOV"
@@ -709,6 +485,116 @@
             android:layout_alignParentBottom="true">
 
 
+
+
         </RelativeLayout>
+
     </LinearLayout>
-</ScrollView>
+
+    </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/fixedCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        app:cardCornerRadius="20dp"
+        android:layout_margin="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/main_tiles_linearlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="10dp">
+
+
+
+
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="6">
+
+                        <TextView
+                            android:id="@+id/lay_goal_name"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="4"
+                            android:gravity="center_vertical"
+                            android:text="Goal Name"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+
+
+                    </LinearLayout>
+
+
+
+                    <LinearLayout
+                        android:id="@+id/check_in_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="end">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Today Check In : "
+                            android:textColor="@color/black" />
+
+                        <androidx.appcompat.widget.AppCompatCheckBox
+                            android:id="@+id/true_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+
+
+            </LinearLayout>
+            </LinearLayout>
+
+
+
+
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -1,9 +1,6 @@
 package com.samar.delivery;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -11,13 +8,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButton;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    private FirebaseAuth firebaseAuth;
-
+    public FirebaseAuth firebaseAuth;
+    // Attribut pour stocker le résultat de la connexion
+    private SigninResult signinResult = SigninResult.NONE;
     private EditText emailEditText, passwordEditText;
     private Button signInButton;
     @Override
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         signInButton.setOnClickListener(view -> signInWithEmailAndPassword());
     }
 
-    private void signInWithEmailAndPassword() {
+    public void signInWithEmailAndPassword() {
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -80,5 +79,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+    public void onSignin(String username, String password) {
+        // Simuler la vérification des informations de connexion
+        if (username.equals("valid_username") && password.equals("valid_password")) {
+            signinResult = SigninResult.SUCCESS;
+        } else {
+            signinResult = SigninResult.FAILED;
+        }
+    }
+    public SigninResult getSigninResult() {
+        return signinResult;
+    }
+
 }
+
 

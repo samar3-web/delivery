@@ -208,7 +208,7 @@ public class ToDoFragment extends Fragment {
             CollectionReference tasksCollection = firestore.collection("tasksCollection");
 
 // Utiliser addSnapshotListener pour écouter les modifications en temps réel
-            tasksCollection.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            tasksCollection.whereEqualTo("assignedUser", user.getEmail()).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
                     if (e != null) {

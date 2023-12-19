@@ -25,6 +25,7 @@
             android:background="@color/colorTheme1">
 
 
+
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
@@ -33,7 +34,23 @@
                 app:layout_constraintEnd_toStartOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+                <!--<FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="19dp">
 
+
+                    <ProgressBar
+                        android:id="@+id/consistency_progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:indeterminate="false"
+                        android:scaleY="4"
+                        android:progressTint="#01D86F"
+                        tools:progress="70" />
+
+                </FrameLayout>-->
 
                 <LinearLayout
                     android:id="@+id/lr"

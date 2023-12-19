@@ -916,7 +916,7 @@ private void showFileOptionsDialog(String fileUrl) {
         DownloadManager.Request request = new DownloadManager.Request(uri);
 
         // Set the destination directory and file name for the downloaded file
-        String fileName = "delivery "+ UUID.randomUUID().toString();; // Replace with the desired file name
+        String fileName = "delivery_"+ UUID.randomUUID().toString().substring(0,8);; // Replace with the desired file name
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
 
         // Enqueue the download request

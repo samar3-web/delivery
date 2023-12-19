@@ -6,8 +6,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -27,6 +29,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatCheckBox;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -68,9 +72,11 @@ import com.microsoft.maps.MapView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.BreakIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,11 +88,10 @@ import java.util.UUID;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TaskDetail extends AppCompatActivity {
+    private static final int PDF_INTENT_CODE = 992;
+    private static final String MY_API_KEY = "AlwLTKgevIemLkhFY8wA2oDQwpxY8SBBAR8a5dXymXDFKTmfGWKkXnJGQkGzXUMM";
     private final int GALLERY_INTENT_CODE = 993;
     private final int CAMERA_INTENT_CODE = 990;
-    private static final int PDF_INTENT_CODE = 992;
-
-
     TextView name, left;
     TextView Tdays, Dleft, Sdate, Edate;
     String currentUserID;
@@ -94,28 +99,24 @@ public class TaskDetail extends AppCompatActivity {
     String task_end, task_create;
     ProgressDialog progressDialog;
     DatabaseReference RootRef;
-
-    private Handler handler = new Handler();
+    ImageView fileUploadButton;
+    ImageButton add_img;
+    ImageView Alarm;
+    CircleImageView taskPic;
+    String TaskName;
+    String id;
+    private final Handler handler = new Handler();
+    private final Handler handlerProgressBar = new Handler();
     private Runnable runnable;
-    private static final String MY_API_KEY = "AlwLTKgevIemLkhFY8wA2oDQwpxY8SBBAR8a5dXymXDFKTmfGWKkXnJGQkGzXUMM";
+    private Runnable runnableProgressBar;
     private MapView mapView;
     private MapElementLayer mPinLayer;
     private MapImage mPinImage;
     private int mUntitledPushpinCount = 0;
     private Geopoint geopoint;
     private ScrollView scrollView;
-
-    ImageView fileUploadButton;
-    ImageButton add_img;
-    ImageView Alarm;
-    CircleImageView taskPic;
-
-    String TaskName;
-    String id;
-
-
-    private String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    private String JUSTDATE_FORMAT = "yyyy-MM-dd";
+    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    private final String JUSTDATE_FORMAT = "yyyy-MM-dd";
     private String EVENT_DATE_TIME = "null";
     private FloatingActionButton direction;
     private String currentUserEmail;
@@ -125,7 +126,11 @@ public class TaskDetail extends AppCompatActivity {
     private ListenerRegistration documentSnapshotListener;
     private AlertDialog dialog;
 
-    private AppCompatCheckBox checkBox ;
+    private AppCompatCheckBox checkBox;
+    private CardView task_manger_cardView;
+    private Button startBtn,postponedBtn,doneBtn;
+    private TextView taskDuration, target_date;
+    private ProgressBar task_progress;
 
 
     @SuppressLint({"ClickableViewAccessibility", "MissingInflatedId"})
@@ -137,6 +142,7 @@ public class TaskDetail extends AppCompatActivity {
         window.setNavigationBarColor(getColor(R.color.blue));
         id = getIntent().getStringExtra("currentTaskid");
         InitializationMethod();
+
 
         RetriveData(id);
 
@@ -183,18 +189,16 @@ public class TaskDetail extends AppCompatActivity {
             }
         });
 
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-
-        {
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged (CompoundButton buttonView,boolean isChecked){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // Update the status of the task based on the checkbox state
                 if (isChecked) {
                     // Checkbox is checked, update task status to "done"
-                    updateTaskStatus(id, "faite"); // Replace with your actual logic
+                    updateTaskStatus("faite"); // Replace with your actual logic
                 } else {
                     // Checkbox is unchecked, update task status to "in progress"
-                    updateTaskStatus(id, "en cours"); // Replace with your actual logic
+                    updateTaskStatus("en cours"); // Replace with your actual logic
                 }
                 // Start the home activity
                 Intent intent = new Intent(TaskDetail.this, HomeActivity.class);
@@ -210,23 +214,15 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
+    private void updateTaskStatus(String newStatus) {
 
-    private void updateTaskStatus(String taskId, String newStatus) {
-        // Access the Firestore instance
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Reference to the tasks collection
-        CollectionReference tasksCollection = db.collection("tasksCollection");
-
-        // Reference to the specific task document
-        DocumentReference taskDocRef = tasksCollection.document(taskId);
 
         // Create a Map to update the 'status' field
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", newStatus);
 
         // Update the 'status' field of the task document
-        taskDocRef.update(updates)
+        taskReference.update(updates)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -242,19 +238,41 @@ public class TaskDetail extends AppCompatActivity {
                     }
                 });
     }
+//mise à jour de l'heureDebutReelle
+    private void updateTaskHDReelle(String newDate) {
 
 
+        // Create a Map to update the 'status' field
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("heureDebutReelle", newDate);
 
+        // Update the 'status' field of the task document
+        taskReference.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Task status updated successfully
+                        // You can add any additional logic here
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the failure to update the task status
+                        // You can add error handling logic here
+                    }
+                });
+    }
     private void InitializationMethod() {
 
         Intent intent = getIntent();
         //id = intent.getStringExtra("LISTKEY");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid ();
-       RootRef = FirebaseDatabase.getInstance().getReference("tasksCollection");
+        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        RootRef = FirebaseDatabase.getInstance().getReference("tasksCollection");
 
-      //  EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
+        //  EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
         //recyclerView = findViewById(R.id.streaknotes);
         //recyclerView.setLayoutManager(new LinearLayoutManager(this));
         name = findViewById(R.id.desc_task_name);
@@ -276,14 +294,19 @@ public class TaskDetail extends AppCompatActivity {
         Dleft = findViewById(R.id.daysLeft);
         Sdate = findViewById(R.id.startDate);
         Edate = findViewById(R.id.endDate);
+        task_manger_cardView = findViewById(R.id.item_cardView);
+        startBtn = findViewById(R.id.startBtn);
+        postponedBtn = findViewById(R.id.postponedBtn);
+        doneBtn = findViewById(R.id.doneBtn);
+        taskDuration = findViewById(R.id.taskDuration);
+        target_date = findViewById(R.id.target_date);
+        task_progress = findViewById(R.id.task_progress);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         documentReference = firebaseFirestore.collection("USERDATA").document(currentUserEmail);
-        Log.d("qqqqqqqqqqqqqqqqq"," "+id);
+        Log.d("qqqqqqqqqqqqqqqqq", " " + id);
         taskReference = firebaseFirestore.collection("tasksCollection").document(id);
-
-
 
 
     }
@@ -310,23 +333,160 @@ public class TaskDetail extends AppCompatActivity {
                     Log.e("Firebase", "Listen failed.", e);
                     return;
                 }
+                handlerProgressBar.removeCallbacks(runnableProgressBar);
 
                 if (documentSnapshot != null && documentSnapshot.exists()) {
                     Log.d("Firebase", "Current data: " + documentSnapshot.getData());
 
                     Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.getId());
                     Log.d("qqqqqqqqqqqqqqqqqq", "Task name : " + documentSnapshot.get("name").toString());
-                    if(documentSnapshot.get("status").toString().equals("faite"))
-                    {Alarm.setVisibility(View.GONE);
+                    if (documentSnapshot.get("status").toString().equals("faite")) {
+                        Alarm.setVisibility(View.GONE);
+                        task_manger_cardView.setVisibility(View.GONE);
 
                     }
+                    else {
+                        taskDuration.setText("Duration : "+documentSnapshot.get("duree").toString()+" Minutes");
+                    }
+                    if (documentSnapshot.get("status").toString().equals("à faire")) {
+                        postponedBtn.setVisibility(View.GONE);
+                        doneBtn.setVisibility(View.GONE);
+                        startBtn.setVisibility((View.VISIBLE));
+                        try {
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                            // Convertir la chaîne de date en objet Date
+                            Date date = inputFormat.parse(documentSnapshot.get("heureDateFinPrevu").toString());
+                            // Définir le format de la date de sortie
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.getDefault());
+                            // Formater la date en tant que chaîne dans le nouveau format
+                            String formattedDate = outputFormat.format(date);
+                            // Définir le texte dans la vue
+                            target_date.setText("To do before : "+formattedDate);
+                        } catch (ParseException ex) {
+                            ex.printStackTrace();
+                        }
+                        startBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                updateTaskStatus("en cours");
+                                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                                String currentDateAndTime = inputFormat.format(new Date());
+                                updateTaskHDReelle(currentDateAndTime);
+
+                            }
+                        });
+
+                    }
+                    if (documentSnapshot.get("status").toString().equals("en cours")) {
+
+                        postponedBtn.setVisibility(View.VISIBLE);
+                        doneBtn.setVisibility(View.VISIBLE);
+                        startBtn.setVisibility((View.GONE));
+                        try {
+                            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                            // Convertir la chaîne de date en objet Date
+                            Date date = inputFormat.parse(documentSnapshot.get("heureDebutReelle").toString());
+
+                            // Créer une instance de Calendar et attribuer la date convertie
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+
+                            // Ajouter une heure (ou deux ou trois) à la date/heures
+                            calendar.add(Calendar.MINUTE, Integer.parseInt(documentSnapshot.get("duree").toString())); // Changez le 1 à 2 ou 3 pour ajouter respectivement deux ou trois heures
+
+                            // Utiliser la même date pour formatter dans le nouveau format
+                            SimpleDateFormat outputFormat = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' HH:mm", Locale.getDefault());
+
+                            // Formater la date modifiée en tant que chaîne dans le nouveau format
+                            String formattedDate = outputFormat.format(calendar.getTime());
+
+                            // Définir le texte dans la vue
+                            target_date.setText("To do before : " + formattedDate);
+                        } catch (ParseException ex) {
+                            ex.printStackTrace();
+                        }
+
+
+                        postponedBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                updateTaskStatus("à faire");
+                            }
+                        });
+                        try {
+                        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                        Date date = inputFormat.parse(documentSnapshot.get("heureDebutReelle").toString());
+                        long startTime = date.getTime();
+                        // Créer une instance de Calendar et attribuer la date convertie
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+
+                        // Ajouter une heure (ou deux ou trois) à la date/heures
+                        calendar.add(Calendar.MINUTE, Integer.parseInt(documentSnapshot.get("duree").toString())); // Changez le 1 à 2 ou 3 pour ajouter respectivement deux ou trois heures
+                        // Formater la date modifiée en tant que chaîne dans le nouveau format
+                        String formattedDate = inputFormat.format(calendar.getTime());
+                        Date dateEnd = inputFormat.parse(formattedDate);
+
+                        long endTime = dateEnd.getTime();
+                            long duration = (Integer.parseInt(documentSnapshot.get("duree").toString())*60000);
+
+                        //long duration = endTime - startTime; // Durée totale
+                            // Handler pour mettre à jour la progression à intervalles réguliers
+                          //  final Handler handlerProgressBar = new Handler();
+                            runnableProgressBar = new Runnable() {
+                                @Override
+                                public void run() {
+                                    long now = System.currentTimeMillis(); // Temps actuel
+
+
+                                    int percentage = 0;
+                                    if (now > startTime) {
+                                        if (now >= endTime) {
+                                            percentage = 100;
+                                        } else {
+                                            Log.d("percentage = (int) ((now - startTime) * 100 / duration)",percentage+" = (int) (("+now+" - "+startTime+") * 100 / "+duration+")");
+                                            percentage = (int) ((now - startTime) * 100 / duration);
+                                        }
+                                    }
+
+                                    task_progress.setProgress(percentage);
+
+                                    // Changement de couleur du ProgressBar à 80%
+                                    if (percentage >= 80) {
+                                        task_progress.setProgressTintList(ColorStateList.valueOf(Color.RED));
+                                    }else{
+                                        task_progress.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+                                    }
+
+                                    // S'assurer de ne pas continuer à mettre à jour après la fin
+                                    if (now < endTime) {
+                                        handlerProgressBar.postDelayed(this, 1000); // Retard de 1 seconde avant la prochaine mise à jour
+                                    }
+
+
+
+
+
+                                }
+                            };
+
+// Démarrer les mises à jour immédiatement
+                            handlerProgressBar.post(runnableProgressBar);
+
+                        } catch (ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+
+
+                    }
+
                     if (documentSnapshot.get("name") != null)
                         name.setText(documentSnapshot.get("name").toString());
 
                     if (documentSnapshot.get("heureDateFinPrevu") != null) {
                         left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
-                        if(documentSnapshot.get("status").toString().equals("faite"))
-                        {// Récupérer la date depuis Firestore
+                        if (documentSnapshot.get("status").toString().equals("faite")) {// Récupérer la date depuis Firestore
                             String dateString = documentSnapshot.get("heureDateFinPrevu").toString();
 
 // Définir le format de la date d'entrée
@@ -350,12 +510,12 @@ public class TaskDetail extends AppCompatActivity {
                             left.setTextColor(getResources().getColor(R.color.blue));
 
                         }
-                        task_create = documentSnapshot.get("heureDateFinPrevu").toString()+":00";;
+                        task_create = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
-                    if (documentSnapshot.get("heureFinReelle") != null){
+                    if (documentSnapshot.get("heureFinReelle") != null) {
                         Edate.setText(documentSnapshot.get("heureFinReelle").toString());
-                        EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
-                        task_end = documentSnapshot.get("heureDateFinPrevu").toString()+":00";
+                        EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
+                        task_end = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
                     if (documentSnapshot.get("heureDebutReelle") != null)
                         Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
@@ -363,7 +523,7 @@ public class TaskDetail extends AppCompatActivity {
                     mPinLayer = new MapElementLayer();
                     mapView.getLayers().add(mPinLayer);
                     mPinImage = getPinImage();
-                    if ((documentSnapshot.contains("latitude")&&documentSnapshot.contains("longitude"))&&((documentSnapshot.get("latitude") != null) && (documentSnapshot.get("longitude") != null))) {
+                    if ((documentSnapshot.contains("latitude") && documentSnapshot.contains("longitude")) && ((documentSnapshot.get("latitude") != null) && (documentSnapshot.get("longitude") != null))) {
                         geopoint = new Geopoint(Double.valueOf(documentSnapshot.get("latitude").toString()), Double.valueOf(documentSnapshot.get("longitude").toString()));
                         addPin(geopoint, documentSnapshot.get("name").toString());
                         mapView.setScene(
@@ -381,8 +541,7 @@ public class TaskDetail extends AppCompatActivity {
 
                             }
                         });
-                    }
-                    else {
+                    } else {
 
                     }
 
@@ -397,7 +556,6 @@ public class TaskDetail extends AppCompatActivity {
                 }
             }
         });
-
 
 
     }
@@ -417,6 +575,7 @@ public class TaskDetail extends AppCompatActivity {
 
         return new MapImage(bitmap);
     }
+
     private void addPin(Geopoint location, String title) {
         // Add a pin to the map at the given location
         MapIcon pushpin = new MapIcon();
@@ -435,8 +594,6 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
-
-
     public void AlarmAct(View view) {
         Intent i = new Intent(getApplicationContext(), AlarmActivity.class); //Pass to AlarmActivity Class
         i.putExtra("TaskName", TaskName); //Passing Task Name
@@ -444,13 +601,11 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
 //        progressDialog.dismiss();
     }
-
 
 
     private void countDownStart() {
@@ -463,8 +618,8 @@ public class TaskDetail extends AppCompatActivity {
                     Date event_date = dateFormat.parse(EVENT_DATE_TIME);
                     Date current_date = new Date();
                     Date created = dateFormat.parse(task_create);
-                    Log.d("oooooooooooooooooooo","Date created = dateFormat.parse(task_create); "+task_create);
-                    Log.d("llllllllllllll","Edate.setText(task_end.substring(0,10).trim()); "+task_create.substring(0,10).trim()+"  "+current_date.after(event_date));
+                    Log.d("oooooooooooooooooooo", "Date created = dateFormat.parse(task_create); " + task_create);
+                    Log.d("llllllllllllll", "Edate.setText(task_end.substring(0,10).trim()); " + task_create.substring(0, 10).trim() + "  " + current_date.after(event_date));
 
                     if (!current_date.after(event_date)) {
                         long diff = event_date.getTime() - current_date.getTime();
@@ -473,29 +628,25 @@ public class TaskDetail extends AppCompatActivity {
                         long Hours = diff / (60 * 60 * 1000) % 24;
                         long Minutes = diff / (60 * 1000) % 60;
                         long Seconds = diff / 1000 % 60;
-                        long totaldays= event_date.getTime()/(24 * 60 * 60 * 1000);
-                        long percent= (Days*100/totaldays);
+                        long totaldays = event_date.getTime() / (24 * 60 * 60 * 1000);
+                        long percent = (Days * 100 / totaldays);
                         //StreakOvewview Data
-                        Tdays.setText(String.format("%02d",diffCreate)+"d");
-                        Dleft.setText(String.format("%02d",Days)+"d");
-                        Sdate.setText(task_create.substring(0,10).trim());
+                        Tdays.setText(String.format("%02d", diffCreate) + "d");
+                        Dleft.setText(String.format("%02d", Days) + "d");
+                        Sdate.setText(task_create.substring(0, 10).trim());
                         //Log.d("llllllllllllll","Edate.setText(task_end.substring(0,10).trim()); "+task_create.substring(0,10).trim());
 
-                        Edate.setText(task_end.substring(0,10).trim());
+                        Edate.setText(task_end.substring(0, 10).trim());
                         //notes.setText(description);
-                        left.setText(String.format("%02d",Days)+" days  "+String.format("%02d", Hours)+":"+String.format("%02d", Minutes)+":"+String.format("%02d", Seconds));
-                        if(percent<=33) {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.red));
+                        left.setText(String.format("%02d", Days) + " days  " + String.format("%02d", Hours) + ":" + String.format("%02d", Minutes) + ":" + String.format("%02d", Seconds));
+                        if (percent <= 33) {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
                             //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightred));
-                        }
-                        else if(percent<=66)
-                        {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.yellow));
+                        } else if (percent <= 66) {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.yellow));
                             //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightyellow));
-                        }
-                        else
-                        {
-                            left.setTextColor(ContextCompat.getColor(getApplicationContext(),R.color.green));
+                        } else {
+                            left.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.green));
                             //rel.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.lightgreen));
                         }
                     } else {
@@ -559,6 +710,7 @@ public class TaskDetail extends AppCompatActivity {
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -568,7 +720,7 @@ public class TaskDetail extends AppCompatActivity {
                 case GALLERY_INTENT_CODE:
                     // Image received from gallery
                     Uri galleryUri = data.getData();
-                  //  Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    //  Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     Bitmap bitmap = null;
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), galleryUri);
@@ -601,7 +753,7 @@ public class TaskDetail extends AppCompatActivity {
         String currentDateTime = dateFormat.format(new Date());
 
         // Define the storage reference path based on file type
-        String storagePath = "/joints/" + id+"_"+FirebaseAuth.getInstance().getCurrentUser().getEmail() + "_" + currentDateTime;
+        String storagePath = "/joints/" + id + "_" + FirebaseAuth.getInstance().getCurrentUser().getEmail() + "_" + currentDateTime;
         if ("pdf".equals(fileType)) {
             storagePath += ".pdf";
             StorageReference storageReference = FirebaseStorage.getInstance().getReference(storagePath);
@@ -670,12 +822,11 @@ public class TaskDetail extends AppCompatActivity {
                         });
                     } else {
                         progressDialog.dismiss();
-                        Toast.makeText(TaskDetail.this, "Failed to update Joint Image"+task.getException(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TaskDetail.this, "Failed to update Joint Image" + task.getException(), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
-
 
 
         showProgressDialog();
@@ -684,152 +835,153 @@ public class TaskDetail extends AppCompatActivity {
 
     }
 
-   /* private void updateFileUrlsListView(List<String> fileUrls) {
+    /* private void updateFileUrlsListView(List<String> fileUrls) {
+         // Assuming you have a ListView named 'fileUrlsListView'
+         ListView fileUrlsListView = findViewById(R.id.fileUrlsListView);
+
+         // Use an ArrayAdapter to display the file URLs in the ListView
+         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item_file, fileUrls);
+         fileUrlsListView.setAdapter(adapter);
+     }*/
+    private void updateFileUrlsListView(List<String> fileUrls) {
         // Assuming you have a ListView named 'fileUrlsListView'
         ListView fileUrlsListView = findViewById(R.id.fileUrlsListView);
+        fileUrlsListView.setOnTouchListener(new View.OnTouchListener() {
 
-        // Use an ArrayAdapter to display the file URLs in the ListView
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item_file, fileUrls);
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // désactiver le défilement du ScrollView
+                        scrollView.requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // activer le défilement du ScrollView
+                        scrollView.requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+                // transmettre les événements tactiles au MapView
+                fileUrlsListView.onTouchEvent(event);
+                return true;
+            }
+        });
+
+        // Use a custom ArrayAdapter with the custom layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item_file, R.id.textFileName, fileUrls) {
+            @NonNull
+            @Override
+            public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                // Inflate the custom layout
+                View view = super.getView(position, convertView, parent);
+
+                // Get the file URL at the current position
+                String fileUrl = getItem(position);
+
+                // Set the file name in the TextView
+                TextView textFileName = view.findViewById(R.id.textFileName);
+                textFileName.setText(position + ". " + getFileNameFromUrl(fileUrl));
+
+                return view;
+            }
+        };
+
         fileUrlsListView.setAdapter(adapter);
-    }*/
-   private void updateFileUrlsListView(List<String> fileUrls) {
-   // Assuming you have a ListView named 'fileUrlsListView'
-   ListView fileUrlsListView = findViewById(R.id.fileUrlsListView);
-       fileUrlsListView.setOnTouchListener(new View.OnTouchListener() {
-
-
-           @Override
-           public boolean onTouch(View v, MotionEvent event) {
-               int action = event.getAction();
-               switch (action) {
-                   case MotionEvent.ACTION_DOWN:
-                       // désactiver le défilement du ScrollView
-                       scrollView.requestDisallowInterceptTouchEvent(true);
-                       break;
-
-                   case MotionEvent.ACTION_UP:
-                       // activer le défilement du ScrollView
-                       scrollView.requestDisallowInterceptTouchEvent(false);
-                       break;
-               }
-               // transmettre les événements tactiles au MapView
-               fileUrlsListView.onTouchEvent(event);
-               return true;
-           }
-       });
-
-    // Use a custom ArrayAdapter with the custom layout
-    ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.list_item_file, R.id.textFileName, fileUrls) {
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            // Inflate the custom layout
-            View view = super.getView(position, convertView, parent);
-
-            // Get the file URL at the current position
-            String fileUrl = getItem(position);
-
-            // Set the file name in the TextView
-            TextView textFileName = view.findViewById(R.id.textFileName);
-            textFileName.setText(position+". "+getFileNameFromUrl(fileUrl));
-
-            return view;
-        }
-    };
-
-    fileUrlsListView.setAdapter(adapter);
-       // Use an ArrayAdapter to display the file URLs in the ListView
+        // Use an ArrayAdapter to display the file URLs in the ListView
        /*ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fileUrls);
        fileUrlsListView.setAdapter(adapter);*/
 
-       // Set a click listener for each item in the ListView
-       fileUrlsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-           @Override
-           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               // Open an AlertDialog or perform any other action when an item is clicked
-               showFileOptionsDialog(fileUrls.get(position));
-           }
-       });
-}
-/*    private void showFileOptionsDialog(String fileUrl) {
+        // Set a click listener for each item in the ListView
+        fileUrlsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Open an AlertDialog or perform any other action when an item is clicked
+                showFileOptionsDialog(fileUrls.get(position));
+            }
+        });
+    }
+
+    /*    private void showFileOptionsDialog(String fileUrl) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("File Options")
+                    .setMessage("Choose an action for the file.")
+                    .setPositiveButton("View", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Implement code to view the file, e.g., show a fragment
+                            // You can call a method to display the file using a fragment
+                            // displayFileFragment(fileUrl);
+                        }
+                    })
+                    .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Call the deleteFile method
+                            deleteFileUrl(fileUrl);
+                        }
+                    })
+                    .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Cancel the dialog
+                            dialog.dismiss();
+                        }
+                    });
+
+            builder.create().show();
+        }*/
+    private void showFileOptionsDialog(String fileUrl) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("File Options")
-                .setMessage("Choose an action for the file.")
-                .setPositiveButton("View", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Implement code to view the file, e.g., show a fragment
-                        // You can call a method to display the file using a fragment
-                        // displayFileFragment(fileUrl);
-                    }
-                })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Call the deleteFile method
-                        deleteFileUrl(fileUrl);
-                    }
-                })
-                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Cancel the dialog
-                        dialog.dismiss();
-                    }
-                });
+        View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_layout, null);
+        builder.setView(dialogView);
 
-        builder.create().show();
-    }*/
-private void showFileOptionsDialog(String fileUrl) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_layout, null);
-    builder.setView(dialogView);
+        TextView title = dialogView.findViewById(R.id.dialogTitle);
+        TextView message = dialogView.findViewById(R.id.dialogMessage);
+        Button btnView = dialogView.findViewById(R.id.btnView);
+        Button btnDelete = dialogView.findViewById(R.id.btnDelete);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
 
-    TextView title = dialogView.findViewById(R.id.dialogTitle);
-    TextView message = dialogView.findViewById(R.id.dialogMessage);
-    Button btnView = dialogView.findViewById(R.id.btnView);
-    Button btnDelete = dialogView.findViewById(R.id.btnDelete);
-    Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+        title.setText("File Options");
+        message.setText("Choose an action for the file.");
 
-    title.setText("File Options");
-    message.setText("Choose an action for the file.");
+        // Set icon and click listener for the View button
+        btnView.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_view, 0, 0, 0);
+        btnView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Implement code to view the file, e.g., show a fragment
+                // You can call a method to display the file using a fragment
+                // displayFileFragment(fileUrl);
+                downloadFile(fileUrl);
+                dialog.dismiss();
+            }
+        });
 
-    // Set icon and click listener for the View button
-    btnView.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_view, 0, 0, 0);
-    btnView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Implement code to view the file, e.g., show a fragment
-            // You can call a method to display the file using a fragment
-            // displayFileFragment(fileUrl);
-            downloadFile(fileUrl);
-            dialog.dismiss();
-        }
-    });
+        // Set icon and click listener for the Delete button
+        btnDelete.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_delete, 0, 0, 0);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the deleteFile method
+                deleteFileUrl(fileUrl);
+                dialog.dismiss();
+            }
+        });
 
-    // Set icon and click listener for the Delete button
-    btnDelete.setCompoundDrawablesWithIntrinsicBounds(android.R.drawable.ic_menu_delete, 0, 0, 0);
-    btnDelete.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Call the deleteFile method
-            deleteFileUrl(fileUrl);
-            dialog.dismiss();
-        }
-    });
+        // Click listener for the Cancel button
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Cancel the dialog
+                dialog.dismiss();
+            }
+        });
 
-    // Click listener for the Cancel button
-    btnCancel.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            // Cancel the dialog
-            dialog.dismiss();
-        }
-    });
-
-    dialog = builder.create();
-    dialog.show();
-}
+        dialog = builder.create();
+        dialog.show();
+    }
 
     // Helper method to extract the file name from the URL
     private String getFileNameFromUrl(String fileUrl) {
@@ -846,6 +998,7 @@ private void showFileOptionsDialog(String fileUrl) {
         // Return original file name if no specific extension found
         return fileName;
     }
+
     public void deleteFileUrl(String fileUrl) {
         // Use the StorageReference to delete the file from Firebase Storage
         StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
@@ -863,7 +1016,7 @@ private void showFileOptionsDialog(String fileUrl) {
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                                         // Get the list of file URLs
-                                        List<String> fileUrlsInFb = (List<String>)documentSnapshot.get("fileUrls");
+                                        List<String> fileUrlsInFb = (List<String>) documentSnapshot.get("fileUrls");
 
                                         if (fileUrlsInFb == null) {
                                             fileUrlsInFb = new ArrayList<>();
@@ -901,10 +1054,10 @@ private void showFileOptionsDialog(String fileUrl) {
     }
 
 
-
     public void test(View view) {
-        Toast.makeText(TaskDetail.this,"hello",Toast.LENGTH_LONG).show();
+        Toast.makeText(TaskDetail.this, "hello", Toast.LENGTH_LONG).show();
     }
+
     private void downloadFile(String fileUrl) {
         // Create a DownloadManager instance
         DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
@@ -916,7 +1069,8 @@ private void showFileOptionsDialog(String fileUrl) {
         DownloadManager.Request request = new DownloadManager.Request(uri);
 
         // Set the destination directory and file name for the downloaded file
-        String fileName = "delivery_"+ UUID.randomUUID().toString().substring(0,8);; // Replace with the desired file name
+        String fileName = "delivery_" + UUID.randomUUID().toString().substring(0, 8);
+        // Replace with the desired file name
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
 
         // Enqueue the download request
@@ -924,6 +1078,11 @@ private void showFileOptionsDialog(String fileUrl) {
 
         // Display a toast indicating that the download has started
         Toast.makeText(this, "Downloading file...", Toast.LENGTH_SHORT).show();
+    }
+    @Override
+    protected void onDestroy() {
+        handlerProgressBar.removeCallbacks(runnableProgressBar);
+        super.onDestroy();
     }
 }
 

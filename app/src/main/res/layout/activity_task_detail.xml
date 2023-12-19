@@ -225,7 +225,7 @@
 
         </RelativeLayout>
 
-
+            <include layout="@layout/task_manager_cardview"/>
         <LinearLayout
             android:id="@+id/streakNote"
             android:layout_width="match_parent"
@@ -246,6 +246,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/show_logs"
                 app:layout_constraintVertical_bias="0.151">
+
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -517,7 +520,8 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
         app:cardCornerRadius="20dp"
-        android:layout_margin="0dp">
+        android:layout_margin="0dp"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"

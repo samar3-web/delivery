@@ -263,6 +263,30 @@ public class TaskDetail extends AppCompatActivity {
                     }
                 });
     }
+    private void updateTaskHFReelle(String newDate) {
+
+
+        // Create a Map to update the 'status' field
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("heureFinReelle", newDate);
+
+        // Update the 'status' field of the task document
+        taskReference.update(updates)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Task status updated successfully
+                        // You can add any additional logic here
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the failure to update the task status
+                        // You can add error handling logic here
+                    }
+                });
+    }
     private void InitializationMethod() {
 
         Intent intent = getIntent();
@@ -410,7 +434,10 @@ public class TaskDetail extends AppCompatActivity {
                         postponedBtn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                handlerProgressBar.removeCallbacks(runnableProgressBar);
                                 updateTaskStatus("à faire");
+
+
                             }
                         });
                         try {
@@ -478,7 +505,18 @@ public class TaskDetail extends AppCompatActivity {
                         }
 
 
+                        doneBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                                String currentDateAndTime = inputFormat.format(new Date());
+                                updateTaskHFReelle(currentDateAndTime);
 
+
+                                updateTaskStatus("faite");
+
+                            }
+                        });
                     }
 
                     if (documentSnapshot.get("name") != null)

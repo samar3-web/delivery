@@ -51,7 +51,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -72,7 +71,6 @@ import com.microsoft.maps.MapView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.BreakIterator;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -215,8 +213,6 @@ public class TaskDetail extends AppCompatActivity {
 
 
     private void updateTaskStatus(String newStatus) {
-
-
         // Create a Map to update the 'status' field
         Map<String, Object> updates = new HashMap<>();
         updates.put("status", newStatus);
@@ -227,6 +223,10 @@ public class TaskDetail extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         // Task status updated successfully
+
+                        // Add logic to create a notification in the 'notifications' collection
+                        addNotification(newStatus);
+
                         // You can add any additional logic here
                     }
                 })
@@ -238,7 +238,66 @@ public class TaskDetail extends AppCompatActivity {
                     }
                 });
     }
-//mise à jour de l'heureDebutReelle
+
+    private void addNotification(String taskStatus) {
+        // Create a new notification document with a unique ID
+        DocumentReference notificationRef = FirebaseFirestore.getInstance().collection("NotificationCollection").document();
+
+        // Retrieve task information
+        String taskId = taskReference.getId();  // Assuming taskReference is a valid DocumentReference
+        final String[] taskName = {""};  // Initialize with an empty string
+        final String[] taskDescription = {""};  // Initialize with an empty string
+
+        // Fetch task details from the database
+        taskReference.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            // Retrieve task name and description
+                            taskName[0] = documentSnapshot.getString("name");
+                            taskDescription[0] = documentSnapshot.getString("description");
+
+                            // Create a Map to store notification data
+                            Map<String, Object> notificationData = new HashMap<>();
+                            notificationData.put("taskId", taskId);
+                            notificationData.put("status", taskStatus);
+                            notificationData.put("taskName", taskName[0]);
+                            notificationData.put("taskDescription", taskDescription[0]);
+                            notificationData.put("timestamp", FieldValue.serverTimestamp());
+
+                            // Set the data in the notification document
+                            notificationRef.set(notificationData)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Notification added successfully
+                                            // You can add any additional logic here
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle the failure to add the notification
+                                            // You can add error handling logic here
+                                        }
+                                    });
+                        } else {
+                            // Handle the case where the task document doesn't exist
+                            // You might want to show an error message or take appropriate action
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle the failure to retrieve the task document
+                        // You can add error handling logic here
+                    }
+                });
+    }
+
+    //mise à jour de l'heureDebutReelle
     private void updateTaskHDReelle(String newDate) {
 
 

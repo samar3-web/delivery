@@ -91,7 +91,7 @@ public class TaskDetail extends AppCompatActivity {
     private final int GALLERY_INTENT_CODE = 993;
     private final int CAMERA_INTENT_CODE = 990;
     TextView name, left;
-    TextView Tdays, Dleft, Sdate, Edate;
+    /*TextView Tdays, Dleft, Sdate, Edate;*/
     String currentUserID;
     long Days;
     String task_end, task_create;
@@ -127,7 +127,7 @@ public class TaskDetail extends AppCompatActivity {
     private AppCompatCheckBox checkBox;
     private CardView task_manger_cardView;
     private Button startBtn,postponedBtn,doneBtn;
-    private TextView taskDuration, target_date;
+    private TextView taskDuration, target_date, taskDescription;
     private ProgressBar task_progress;
 
 
@@ -373,10 +373,10 @@ public class TaskDetail extends AppCompatActivity {
 
 
         //Streak Overview
-        Tdays = findViewById(R.id.totalDays);
+        /*Tdays = findViewById(R.id.totalDays);
         Dleft = findViewById(R.id.daysLeft);
         Sdate = findViewById(R.id.startDate);
-        Edate = findViewById(R.id.endDate);
+        Edate = findViewById(R.id.endDate);*/
         task_manger_cardView = findViewById(R.id.item_cardView);
         startBtn = findViewById(R.id.startBtn);
         postponedBtn = findViewById(R.id.postponedBtn);
@@ -384,6 +384,7 @@ public class TaskDetail extends AppCompatActivity {
         taskDuration = findViewById(R.id.taskDuration);
         target_date = findViewById(R.id.target_date);
         task_progress = findViewById(R.id.task_progress);
+        taskDescription = findViewById(R.id.text_view_description);
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         currentUserEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
@@ -581,6 +582,9 @@ public class TaskDetail extends AppCompatActivity {
                     if (documentSnapshot.get("name") != null)
                         name.setText(documentSnapshot.get("name").toString());
 
+                    if (documentSnapshot.get("description") != null)
+                        taskDescription.setText(documentSnapshot.get("description").toString());
+
                     if (documentSnapshot.get("heureDateFinPrevu") != null) {
                         left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
                         if (documentSnapshot.get("status").toString().equals("faite")) {// Récupérer la date depuis Firestore
@@ -610,12 +614,12 @@ public class TaskDetail extends AppCompatActivity {
                         task_create = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
                     if (documentSnapshot.get("heureFinReelle") != null) {
-                        Edate.setText(documentSnapshot.get("heureFinReelle").toString());
+                        //Edate.setText(documentSnapshot.get("heureFinReelle").toString());
                         EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                         task_end = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
                     if (documentSnapshot.get("heureDebutReelle") != null)
-                        Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
+                       // Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
 
                     mPinLayer = new MapElementLayer();
                     mapView.getLayers().add(mPinLayer);
@@ -728,12 +732,12 @@ public class TaskDetail extends AppCompatActivity {
                         long totaldays = event_date.getTime() / (24 * 60 * 60 * 1000);
                         long percent = (Days * 100 / totaldays);
                         //StreakOvewview Data
-                        Tdays.setText(String.format("%02d", diffCreate) + "d");
-                        Dleft.setText(String.format("%02d", Days) + "d");
-                        Sdate.setText(task_create.substring(0, 10).trim());
+                        //Tdays.setText(String.format("%02d", diffCreate) + "d");
+                       // Dleft.setText(String.format("%02d", Days) + "d");
+                      //  Sdate.setText(task_create.substring(0, 10).trim());
                         //Log.d("llllllllllllll","Edate.setText(task_end.substring(0,10).trim()); "+task_create.substring(0,10).trim());
 
-                        Edate.setText(task_end.substring(0, 10).trim());
+                        //Edate.setText(task_end.substring(0, 10).trim());
                         //notes.setText(description);
                         left.setText(String.format("%02d", Days) + " days  " + String.format("%02d", Hours) + ":" + String.format("%02d", Minutes) + ":" + String.format("%02d", Seconds));
                         if (percent <= 33) {

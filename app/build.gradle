@@ -78,6 +78,9 @@ dependencies {
 
     implementation 'com.romandanylyk:pageindicatorview:1.0.3'
 
+
     implementation files('libs/maps-sdk-1.2.0.aar')
+    //implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.github.afreakyelf:Pdf-Viewer:v2.0.4'
 
 }

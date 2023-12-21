@@ -618,7 +618,7 @@ public class TaskDetail extends AppCompatActivity {
                         EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                         task_end = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
-                    if (documentSnapshot.get("heureDebutReelle") != null)
+                   // if (documentSnapshot.get("heureDebutReelle") != null)
                        // Sdate.setText(documentSnapshot.get("heureDebutReelle").toString());
 
                     mPinLayer = new MapElementLayer();
@@ -702,11 +702,11 @@ public class TaskDetail extends AppCompatActivity {
     }
 
 
-    @Override
+    /*@Override
     public void onBackPressed() {
         super.onBackPressed();
 //        progressDialog.dismiss();
-    }
+    }*/
 
 
     private void countDownStart() {
@@ -1000,6 +1000,8 @@ public class TaskDetail extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Open an AlertDialog or perform any other action when an item is clicked
                 showFileOptionsDialog(fileUrls.get(position));
+                /*PopupFragment popupFragment = PopupFragment.newInstance(fileUrls.get(position));
+                popupFragment.show(getSupportFragmentManager(), "popup_fragment_tag");*/
             }
         });
     }
@@ -1183,6 +1185,7 @@ public class TaskDetail extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         handlerProgressBar.removeCallbacks(runnableProgressBar);
+        handler.removeCallbacks(runnable);
         super.onDestroy();
     }
 }

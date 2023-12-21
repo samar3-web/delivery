@@ -59,7 +59,10 @@ public class InProgressFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    ImageView profile_button;
+    ArrayList<TimelineRow> timelineRowsList1;
+    ArrayAdapter<TimelineRow> myAdapter1;
+    TextView counter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -67,16 +70,12 @@ public class InProgressFragment extends Fragment {
     private SparseArray<String> taskIdsMap1 = new SparseArray<>();
     private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private ChipNavigationBar chipNavigationBar;
-    ImageView profile_button;
     private ListView myListViewDone;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private List<com.samar.delivery.models.Task> tasks;
     private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
-    ArrayList<TimelineRow> timelineRowsList1;
-    ArrayAdapter<TimelineRow> myAdapter1;
-    TextView counter;
     private EditText taskSearch;
 
     public InProgressFragment() {
@@ -101,6 +100,18 @@ public class InProgressFragment extends Fragment {
         return fragment;
     }
 
+    public static Date calculateSymmetricDate(Date givenDate) {
+        if (givenDate == null) {
+            // Retourne la date actuelle si givenDate est null
+            return new Date();
+        }
+        Date currentDate = new Date();
+        long timeDifference = givenDate.getTime() - currentDate.getTime();
+        long symmetricTime = currentDate.getTime() - timeDifference;
+
+        return new Date(symmetricTime);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,7 +125,7 @@ public class InProgressFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_in_progress, container, false);
+        View view = inflater.inflate(R.layout.fragment_in_progress, container, false);
 
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -141,12 +152,12 @@ public class InProgressFragment extends Fragment {
                 // Get the item that was clicked
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(getContext(), row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(),TaskDetail.class);
+                Intent intent = new Intent(getContext(), TaskDetail.class);
                 // Retrieve the currentTaskId using the mapping
                 String currentTaskId = taskIdsMap1.get(position);
                 intent.putExtra("currentTaskid", currentTaskId);
 
-                Log.d("iiiiiiiiiiid",currentTaskId);
+                Log.d("iiiiiiiiiiid", currentTaskId);
                 startActivity(intent);
                 // finish();
             }
@@ -201,6 +212,7 @@ public class InProgressFragment extends Fragment {
 
         return view;
     }
+
     private void loadData() {
         // Vérifier l'authentification de l'utilisateur avant de charger les données
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -244,8 +256,11 @@ public class InProgressFragment extends Fragment {
                             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                             try {
                                 // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
-                                String d = doc.get("heureDateDebutPrevu").toString()+":00";
+                                String d = doc.get("heureDateDebutPrevu").toString() + ":00";
+                                Log.d("TaskId  :  ", currentTaskId);
 
+                                Log.d("doc.get(\"heureDateDebutPrevu\").toString()", doc.get("heureDateDebutPrevu").toString());
+                                Log.d("String d = doc.get(\"heureDateDebutPrevu\").toString()+\":00\";", d);
                                 Date date = dateFormat.parse(d);
                                 Date dateSymitric = calculateSymmetricDate(date);
                                 myRow.setDate(dateSymitric);
@@ -297,18 +312,17 @@ public class InProgressFragment extends Fragment {
                             myRow.setDescriptionColor(getResources().getColor(R.color.colorTheme2));
 
 // Add the new row to the list
-                            if(doc.get("status").toString().equals("en cours")){
+                            if (doc.get("status").toString().equals("en cours")) {
                                 timelineRowsList1.add(myRow);
                                 // Map the currentTaskId to the position in the list
                                 taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
                                 numberOfTasksInProgress++; // Incrémente le compteur pour les tâches en cours
 
                             }
-                           // SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+                            // SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
                             for (int i = 0; i < taskIdsMap1.size(); i++) {
                                 clonedTaskIdsMap.put(taskIdsMap1.keyAt(i), taskIdsMap1.valueAt(i));
                             }
-
 
 
                         }
@@ -358,22 +372,12 @@ public class InProgressFragment extends Fragment {
 
 
     }
+
     private void checkUserAuthentication() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         if (user == null) {
 
         }
-    }
-    public static Date calculateSymmetricDate(Date givenDate) {
-        if (givenDate == null) {
-            // Retourne la date actuelle si givenDate est null
-            return new Date();
-        }
-        Date currentDate = new Date();
-        long timeDifference = givenDate.getTime() - currentDate.getTime();
-        long symmetricTime = currentDate.getTime() - timeDifference;
-
-        return new Date(symmetricTime);
     }
 }

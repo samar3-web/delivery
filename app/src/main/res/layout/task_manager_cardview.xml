@@ -6,6 +6,8 @@
     android:layout_height="wrap_content"
     android:id="@+id/item_cardView"
     xmlns:tools="http://schemas.android.com/tools"
+
+    app:cardBackgroundColor="@color/colorTheme4"
     android:layout_margin="20dp"
     app:cardCornerRadius="20dp"
     app:cardElevation="5dp"

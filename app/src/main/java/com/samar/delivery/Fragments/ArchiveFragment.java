@@ -1,4 +1,4 @@
-package com.samar.delivery;
+package com.samar.delivery.Fragments;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -22,8 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -35,6 +33,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
+import com.samar.delivery.R;
+import com.samar.delivery.TaskDetail;
 import com.samar.delivery.models.Task;
 
 import org.qap.ctimelineview.TimelineRow;
@@ -141,7 +141,7 @@ public class ArchiveFragment extends Fragment {
                 // Get the item that was clicked
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(getContext(), row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(),TaskDetail.class);
+                Intent intent = new Intent(getContext(), TaskDetail.class);
                 String currentTaskId = taskIdsMap.get(position);
                 intent.putExtra("currentTaskid", currentTaskId);
                 //startActivity(intent);

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/xml/preferences.xml -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="theme_preference"
+        android:title="Mode sombre"
+        android:summary="Choisissez le mode sombre de l'application"
+        android:defaultValue="system"
+        android:entries="@array/theme_options"
+        android:entryValues="@array/theme_options" />
+
+</PreferenceScreen>

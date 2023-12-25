@@ -1,4 +1,4 @@
-package com.samar.delivery;
+package com.samar.delivery.Fragments;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -23,8 +23,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.samar.delivery.models.Task;
+import com.samar.delivery.R;
+import com.samar.delivery.TaskDetail;
 
 import org.qap.ctimelineview.TimelineRow;
 import org.qap.ctimelineview.TimelineViewAdapter;
@@ -49,36 +48,35 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ToDoFragment#newInstance} factory method to
+ * Use the {@link InProgressFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ToDoFragment extends Fragment {
+public class InProgressFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    ImageView profile_button;
+    ArrayList<TimelineRow> timelineRowsList1;
+    ArrayAdapter<TimelineRow> myAdapter1;
+    TextView counter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private ListView myListView;
-    private SparseArray<String> taskIdsMap = new SparseArray<>();
+    private ListView myListView1;
+    private SparseArray<String> taskIdsMap1 = new SparseArray<>();
+    private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private ChipNavigationBar chipNavigationBar;
-    ImageView profile_button;
     private ListView myListViewDone;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
-    private List<Task> tasks;
+    private List<com.samar.delivery.models.Task> tasks;
     private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
-    ArrayList<TimelineRow> timelineRowsList;
-    ArrayAdapter<TimelineRow> myAdapter;
-    TextView counter;
-    private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private EditText taskSearch;
 
-    public ToDoFragment() {
+    public InProgressFragment() {
         // Required empty public constructor
     }
 
@@ -88,16 +86,28 @@ public class ToDoFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ToDoFragment.
+     * @return A new instance of fragment InProgressFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ToDoFragment newInstance(String param1, String param2) {
-        ToDoFragment fragment = new ToDoFragment();
+    public static InProgressFragment newInstance(String param1, String param2) {
+        InProgressFragment fragment = new InProgressFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static Date calculateSymmetricDate(Date givenDate) {
+        if (givenDate == null) {
+            // Retourne la date actuelle si givenDate est null
+            return new Date();
+        }
+        Date currentDate = new Date();
+        long timeDifference = givenDate.getTime() - currentDate.getTime();
+        long symmetricTime = currentDate.getTime() - timeDifference;
+
+        return new Date(symmetricTime);
     }
 
     @Override
@@ -113,8 +123,7 @@ public class ToDoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_to_do, container, false);
-
+        View view = inflater.inflate(R.layout.fragment_in_progress, container, false);
 
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -129,28 +138,29 @@ public class ToDoFragment extends Fragment {
 
 
 // Create Timeline rows List
-        timelineRowsList = new ArrayList<>();
+        timelineRowsList1 = new ArrayList<>();
         loadData();
-        myListView = (ListView) view.findViewById(R.id.timeline_listView);
-        taskSearch = (EditText) view.findViewById(R.id.goal_search);
+        myListView1 = (ListView) view.findViewById(R.id.timeline_listView1);
         counter = view.findViewById(R.id.counter);
+        taskSearch = (EditText) view.findViewById(R.id.goal_search);
 
-        myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        myListView1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Get the item that was clicked
                 TimelineRow row = (TimelineRow) parent.getItemAtPosition(position);
                 Toast.makeText(getContext(), row.getTitle(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(),TaskDetail.class);
+                Intent intent = new Intent(getContext(), TaskDetail.class);
                 // Retrieve the currentTaskId using the mapping
-                String currentTaskId = taskIdsMap.get(position);
+                String currentTaskId = taskIdsMap1.get(position);
                 intent.putExtra("currentTaskid", currentTaskId);
 
-                Log.d("iiiiiiiiiiid",currentTaskId);
+                Log.d("iiiiiiiiiiid", currentTaskId);
                 startActivity(intent);
                 // finish();
             }
         });
+
         taskSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -169,9 +179,9 @@ public class ToDoFragment extends Fragment {
                 ArrayList<TimelineRow> newTimelineRowsList = new ArrayList<>();
                 SparseArray<String> newTaskIdsMap = new SparseArray<>();
 
-                for (int i = 0; i < timelineRowsList.size(); i++) {
+                for (int i = 0; i < timelineRowsList1.size(); i++) {
                     // Get the TimelineRow at position i
-                    TimelineRow row = timelineRowsList.get(i);
+                    TimelineRow row = timelineRowsList1.get(i);
 
                     // Check if the entered text matches with the task name or description
                     if (row.getTitle().toLowerCase().contains(editable.toString().toLowerCase()) ||
@@ -183,26 +193,29 @@ public class ToDoFragment extends Fragment {
                         newTaskIdsMap.put(newTimelineRowsList.size() - 1, clonedTaskIdsMap.get(i));
                     }
                 }
-                taskIdsMap = null;
-                taskIdsMap = newTaskIdsMap.clone();
+                taskIdsMap1 = null;
+                taskIdsMap1 = newTaskIdsMap.clone();
 
 
                 // Update the adapter with the new list of TimelineRows
-                myAdapter = new TimelineViewAdapter(getContext(), 0, newTimelineRowsList,
+                myAdapter1 = new TimelineViewAdapter(getContext(), 0, newTimelineRowsList,
                         //if true, list will be sorted by date
                         false);
-                myListView.setAdapter(myAdapter);
-                myAdapter.notifyDataSetChanged();
+                myListView1.setAdapter(myAdapter1);
+                myAdapter1.notifyDataSetChanged();
 
 
             }
         });
+
         return view;
     }
+
     private void loadData() {
         // Vérifier l'authentification de l'utilisateur avant de charger les données
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
+
             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
             // Référence à votre collection Firestore
             CollectionReference tasksCollection = firestore.collection("tasksCollection");
@@ -219,18 +232,20 @@ public class ToDoFragment extends Fragment {
                         // Le fragment n'est pas attaché à une activité
                         return;
                     }
-                    int numberOfTasksToDO = 0;
-
+                    int numberOfTasksInProgress = 0; // Compteur pour les tâches en cours
                     if (snapshot != null && !snapshot.isEmpty()) {
+
+
                         // La collection a été modifiée, mettre à jour les données dans votre application
 
-                        timelineRowsList.clear();
+                        timelineRowsList1.clear();
                         tasks = new ArrayList<>();
 
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
                             // Votre code pour extraire les données et mettre à jour l'interface utilisateur
                             // ...
                             String currentTaskId = doc.getId();
+
 // Create new timeline row (Row Id)
                             TimelineRow myRow = new TimelineRow(0);
 
@@ -240,7 +255,10 @@ public class ToDoFragment extends Fragment {
                             try {
                                 // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
                                 String d = doc.get("heureDateDebutPrevu").toString() + ":00";
+                                Log.d("TaskId  :  ", currentTaskId);
 
+                                Log.d("doc.get(\"heureDateDebutPrevu\").toString()", doc.get("heureDateDebutPrevu").toString());
+                                Log.d("String d = doc.get(\"heureDateDebutPrevu\").toString()+\":00\";", d);
                                 Date date = dateFormat.parse(d);
                                 Date dateSymitric = calculateSymmetricDate(date);
                                 myRow.setDate(dateSymitric);
@@ -291,40 +309,60 @@ public class ToDoFragment extends Fragment {
 // To set row Description text color (optional)
                             myRow.setDescriptionColor(getResources().getColor(R.color.colorTheme2));
 
-
 // Add the new row to the list
-                            if (doc.get("status").toString().equals("à faire")) {
-                                timelineRowsList.add(myRow);
+                            if (doc.get("status").toString().equals("en cours")) {
+                                timelineRowsList1.add(myRow);
                                 // Map the currentTaskId to the position in the list
-                                taskIdsMap.put(timelineRowsList.size() - 1, currentTaskId);
-                                numberOfTasksToDO++;
+                                taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
+                                numberOfTasksInProgress++; // Incrémente le compteur pour les tâches en cours
 
                             }
-// SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
-                            for (int i = 0; i < taskIdsMap.size(); i++) {
-                                clonedTaskIdsMap.put(taskIdsMap.keyAt(i), taskIdsMap.valueAt(i));
+                            // SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+                            for (int i = 0; i < taskIdsMap1.size(); i++) {
+                                clonedTaskIdsMap.put(taskIdsMap1.keyAt(i), taskIdsMap1.valueAt(i));
                             }
+
 
                         }
                     } else {
                         Log.d("FirestoreListener", "Current data: null");
-
                     }
-                    myAdapter = new TimelineViewAdapter(getContext(), 0, timelineRowsList,
+                    myAdapter1 = new TimelineViewAdapter(getContext(), 0, timelineRowsList1,
                             //if true, list will be sorted by date
                             false);
-                    myListView.setAdapter(myAdapter);
-                    myAdapter.notifyDataSetChanged();
+                    myListView1.setAdapter(myAdapter1);
+                    myAdapter1.notifyDataSetChanged();
                     // Afficher le compteur dans votre TextView
-                    if (numberOfTasksToDO > 0) {
+                    if (numberOfTasksInProgress > 0) {
                         counter.setVisibility(View.VISIBLE);
-                        counter.setText("Total Tasks Done : " + numberOfTasksToDO);
+                        counter.setText("Total Tasks in Progress : " + numberOfTasksInProgress);
                     } else {
                         counter.setVisibility(View.GONE);
                     }
                 }
-
             });
+           /* firestore.collection("tasksCollection").get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+                        @Override
+                        public void onComplete(Task<QuerySnapshot> task) {
+                            Log.d("xxxxxdocs", "onComplete: of task data fetching " + task.getResult().getDocuments());
+                            tasks = new ArrayList<com.samar.delivery.models.Task>();
+
+                            for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+
+
+                            }
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(Exception e) {
+                            Log.d("xxxxx", "onFailure: of HouseData fectching " + e.getLocalizedMessage());
+                        }
+                    });*/
+
+
         } else {
 
             Log.d("Firebase", "no user logged in .");
@@ -333,25 +371,11 @@ public class ToDoFragment extends Fragment {
 
     }
 
-
-
-
     private void checkUserAuthentication() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         if (user == null) {
 
         }
-    }
-    public static Date calculateSymmetricDate(Date givenDate) {
-        if (givenDate == null) {
-            // Retourne la date actuelle si givenDate est null
-            return new Date();
-        }
-        Date currentDate = new Date();
-        long timeDifference = givenDate.getTime() - currentDate.getTime();
-        long symmetricTime = currentDate.getTime() - timeDifference;
-
-        return new Date(symmetricTime);
     }
 }

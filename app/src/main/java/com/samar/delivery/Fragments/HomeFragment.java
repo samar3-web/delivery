@@ -1,4 +1,4 @@
-package com.samar.delivery;
+package com.samar.delivery.Fragments;
 
 import android.os.Bundle;
 
@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.samar.delivery.R;
 
 /**
  * A simple {@link Fragment} subclass.

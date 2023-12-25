@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/arrays.xml -->
+<resources>
+    <string-array name="theme_options">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+
+</resources>

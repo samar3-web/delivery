@@ -2,51 +2,39 @@ package com.samar.delivery;
 
 import static android.app.PendingIntent.getActivity;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.Transition;
-import android.transition.TransitionSet;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -55,8 +43,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.rd.PageIndicatorView;
-import com.rd.animation.type.AnimationType;
 import com.samar.delivery.Adapter.TaskAdapter;
+import com.samar.delivery.Fragments.ArchiveFragment;
+import com.samar.delivery.Fragments.ChatFragment;
+import com.samar.delivery.Fragments.HomeFragment;
+import com.samar.delivery.Fragments.NotificationFragment;
+import com.samar.delivery.Fragments.SettingsFragment;
 import com.squareup.picasso.Picasso;
 
 import org.qap.ctimelineview.TimelineRow;
@@ -67,7 +59,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity {
     RecyclerView my_rcv;
@@ -90,6 +81,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private SparseArray<String> taskIdsMap = new SparseArray<>();
     private SparseArray<String> taskIdsMap1 = new SparseArray<>();
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,15 +92,49 @@ public class HomeActivity extends AppCompatActivity {
         window.setNavigationBarColor(getColor(R.color.blue));
 
 
+        // Dans votre activité principale ou Application class
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePreference = preferences.getString("theme_preference", "system");
+
+        if ("system".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if ("light".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            //setTheme(R.style.Theme_Delivery);
+        } else if ("dark".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+
+
+
 
         chipNavigationBar = findViewById(R.id.bottom_nav_bar);
-        chipNavigationBar.setItemSelected(R.id.nav_home,
-                true);
+        String settingsFragmentPreference = preferences.getString("settings_fragment", "false");
+        if(settingsFragmentPreference.equals("true"))
+        {
+            chipNavigationBar.setItemSelected(R.id.nav_settings,true);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frag_container_nav,
+                            new SettingsFragment()).commit();
+           // SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("settings_fragment", "false");
+            editor.apply();
+
+        } else{
+            chipNavigationBar.setItemSelected(R.id.nav_home,true);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frag_container_nav,
+                            new HomeFragment()).commit();
+
+        }
+        Log.d("idididididid",""+settingsFragmentPreference);
+        // if(chipNavigationBar.getSelectedItemId())
+
+        Log.d("idididididid",""+chipNavigationBar.getSelectedItemId());
         profile_button = findViewById(R.id.logout_btn);
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.frag_container_nav,
-                        new HomeFragment()).commit();
+
         bottomMenu();
         profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,123 +176,7 @@ public class HomeActivity extends AppCompatActivity {
         recyclerViewDelivered.setAdapter(deliveredAdapter);
     }
 
-    private void loadData() {
-        // Vérifier l'authentification de l'utilisateur avant de charger les données
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
 
-            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-            firestore.collection("tasksCollection").get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(Task<QuerySnapshot> task) {
-                            Log.d("xxxxxdocs", "onComplete: of task data fetching " + task.getResult().getDocuments());
-                            tasks = new ArrayList<com.samar.delivery.models.Task>();
-
-                            for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-
-                                String currentTaskId = doc.getId();
-
-// Create new timeline row (Row Id)
-                                TimelineRow myRow = new TimelineRow(0);
-
-// To set the row Date (optional)
-
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                try {
-                                   // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
-                                    String d = doc.get("heureDateDebutPrevu").toString()+":00";
-
-                                    Date date = dateFormat.parse(d);
-                                    Date dateSymitric = calculateSymmetricDate(date);
-                                    myRow.setDate(dateSymitric);
-                                    myRow.setDateColor(Color.argb(255, 30, 100, 0));
-                                } catch (ParseException e) {
-                                    throw new RuntimeException(e);
-                                }
-// To set the row Title (optional)
-                                /*myRow.setDate(new Date());*/
-                                myRow.setTitle(doc.get("name").toString());
-// To set the row Description (optional)
-                                myRow.setDescription(doc.get("description").toString());
-// To set the row bitmap image (optional)
-                                myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
-
-// To set row Below Line Size in dp (optional)
-                                myRow.setBellowLineSize(6);
-// To set row Image Size in dp (optional)
-                                myRow.setImageSize(30);
-// To set background color of the row image (optional)
-                                switch (doc.get("priority").toString()) {
-                                    case "basse":
-                                        myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 30, 100, 0));
-
-                                        break;
-                                    case "moyenne":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 165, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 165, 0));
-                                        break;
-                                    case "haute":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 0, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 0, 0));
-                                        break;
-                                    default:
-                                        System.out.println("Priorité non valide");
-                                }
-                               // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
-// To set the Background Size of the row image in dp (optional)
-                                myRow.setBackgroundSize(40);
-// To set row Date text color (optional)
-                                myRow.setDateColor(Color.argb(255, 0, 0, 0));
-// To set row Title text color (optional)
-                                myRow.setTitleColor(Color.argb(255, 0, 0, 0));
-// To set row Description text color (optional)
-                                myRow.setDescriptionColor(Color.argb(255, 0, 0, 0));
-
-// Add the new row to the list
-                                if(doc.get("status").toString().equals("à faire")){
-                                timelineRowsList.add(myRow);
-                                    // Map the currentTaskId to the position in the list
-                                    taskIdsMap.put(timelineRowsList.size() - 1, currentTaskId);
-                                }
-                                else if(doc.get("status").toString().equals("en cours")){
-                                    timelineRowsList1.add(myRow);
-                                    // Map the currentTaskId to the position in the list
-                                    taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);
-
-                                }
-                                Log.d("pppppppppppppp","timelineRowsList.size() : "+timelineRowsList.size());
-
-
-                            }
-                            myAdapter = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsList,
-                                    //if true, list will be sorted by date
-                                    false);
-                            myListView.setAdapter(myAdapter);
-                            myAdapter1 = new TimelineViewAdapter(getApplicationContext(), 0, timelineRowsList1,
-                                    //if true, list will be sorted by date
-                                    false);
-                            myListView1.setAdapter(myAdapter1);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
-                            Log.d("xxxxx", "onFailure: of HouseData fectching " + e.getLocalizedMessage());
-                        }
-                    });
-
-
-        } else {
-
-            Log.d("Firebase", "no user logged in .");
-        }
-
-
-    }
 
     private void checkUserAuthentication() {
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -302,7 +212,7 @@ public class HomeActivity extends AppCompatActivity {
                 Log.d("xxxx", "onFailure: " + e.getLocalizedMessage());
             }
         });
-     
+
     }*/
     private void RetriveUserImage() {
         // Getting profile picture to set in the profile button
@@ -345,7 +255,7 @@ public class HomeActivity extends AppCompatActivity {
                 (new ChipNavigationBar.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(int i) {
-                        Fragment fragment = null;
+                        fragment = null;
                         switch (i){
                             case R.id.nav_home:
                                 fragment = new HomeFragment();
@@ -364,11 +274,30 @@ public class HomeActivity extends AppCompatActivity {
                             break;
                             case R.id.nav_new_chat:
                                // fragment = new RankFragment();
+                                fragment = new ChatFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.frag_container_nav,
+                                                fragment).commit();
+                                break;
+                            case R.id.nav_new_notif:
+                                // fragment = new RankFragment();
+                                fragment = new NotificationFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.frag_container_nav,
+                                                fragment).commit();
                                 break;
                             case R.id.nav_settings:
                                // fragment = new SettingsFragment();
+                                fragment = new SettingsFragment();
+                                getSupportFragmentManager().beginTransaction()
+                                        .replace(R.id.frag_container_nav,
+                                                fragment).commit();
                                 break;
                         }
+                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("settings_fragment", "false");
+                        editor.apply();
 
                        /* getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.frag_container_nav,
@@ -389,8 +318,10 @@ public class HomeActivity extends AppCompatActivity {
 
         return new Date(symmetricTime);
     }
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
+       // super.onBackPressed();
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
         } else {
@@ -409,7 +340,7 @@ public class HomeActivity extends AppCompatActivity {
                             intent.addCategory(Intent.CATEGORY_HOME);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
-                           //onDestroy();
+                            //onDestroy();
                         }
                     })
                     .setNegativeButton("No", null)
@@ -424,7 +355,11 @@ public class HomeActivity extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finishAffinity();
+      //  finishAffinity();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putString("settings_fragment", "false");
+                        editor.apply();
     }*/
 
     }

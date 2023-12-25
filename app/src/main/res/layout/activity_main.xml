@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity"
-    android:background="@color/white">
+    android:background="@color/colorTheme1">
 
     <com.airbnb.lottie.LottieAnimationView
         android:layout_width="match_parent"
@@ -21,7 +21,8 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:text="Votre course, en toute confiance."
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="@color/colorTheme2"/>
 
     <LinearLayout
         style="@style/linearParent"
@@ -31,7 +32,7 @@
         <TextView
             style="@style/headerTextPrimary"
             android:text="Login"
-            android:textSize="28sp"
+            android:textSize="34sp"
             android:layout_marginTop="@dimen/loginViewsMargin"/>
 
         <com.google.android.material.textfield.TextInputLayout

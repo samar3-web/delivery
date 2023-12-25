@@ -1,7 +1,9 @@
 package com.samar.delivery;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Window;
 import android.widget.Button;
@@ -9,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Window window = getWindow();
         window.setNavigationBarColor(getColor(R.color.blue));
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePreference = preferences.getString("theme_preference", "system");
+
+        if ("system".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        } else if ("light".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            //setTheme(R.style.Theme_Delivery);
+        } else if ("dark".equals(themePreference)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
         // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
 

@@ -325,6 +325,14 @@ public class HomeActivity extends AppCompatActivity {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
         } else {
+            if(chipNavigationBar.getSelectedItemId()!=R.id.nav_home){
+                chipNavigationBar.setItemSelected(R.id.nav_home,true);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frag_container_nav,
+                                new HomeFragment()).commit();
+            }
+            else
+            {
             new AlertDialog.Builder(this)
                     .setMessage("Are you sure you want to exit the application?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -345,6 +353,7 @@ public class HomeActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("No", null)
                     .show();
+        }
         }
     }
 

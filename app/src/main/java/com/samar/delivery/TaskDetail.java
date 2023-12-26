@@ -599,6 +599,7 @@ public class TaskDetail extends AppCompatActivity {
                         left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
                         if (documentSnapshot.get("status").toString().equals("faite")) {// Récupérer la date depuis Firestore
                             String dateString = documentSnapshot.get("heureFinReelle").toString();
+                            Log.d("tttttttttttttttt"," "+taskDocId+" "+dateString);
 
 // Définir le format de la date d'entrée
                             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
@@ -625,7 +626,12 @@ public class TaskDetail extends AppCompatActivity {
                     }
                     if (documentSnapshot.get("heureDateFinPrevu") != null) {
                         //Edate.setText(documentSnapshot.get("heureFinReelle").toString());
+                        if ((documentSnapshot.get("status").toString().equals("faite"))&&(documentSnapshot.get("heureFinReelle") != null)){
+                            EVENT_DATE_TIME = documentSnapshot.get("heureFinReelle").toString() + ":00";
+                        }
+                        else  {
                         EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
+                        }
                         task_end = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
                    // if (documentSnapshot.get("heureDebutReelle") != null)

@@ -168,7 +168,7 @@ public class ToDoFragment extends Fragment {
                 // Creating new list of tasks based on the entered value in the taskSearch
                 ArrayList<TimelineRow> newTimelineRowsList = new ArrayList<>();
                 SparseArray<String> newTaskIdsMap = new SparseArray<>();
-
+                if (timelineRowsList != null) {
                 for (int i = 0; i < timelineRowsList.size(); i++) {
                     // Get the TimelineRow at position i
                     TimelineRow row = timelineRowsList.get(i);
@@ -194,7 +194,7 @@ public class ToDoFragment extends Fragment {
                 myListView.setAdapter(myAdapter);
                 myAdapter.notifyDataSetChanged();
 
-
+            }
             }
         });
         return view;
@@ -228,6 +228,7 @@ public class ToDoFragment extends Fragment {
                         tasks = new ArrayList<>();
 
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                            if (doc.get("status").toString().equals("à faire")) {
                             // Votre code pour extraire les données et mettre à jour l'interface utilisateur
                             // ...
                             String currentTaskId = doc.getId();
@@ -293,7 +294,7 @@ public class ToDoFragment extends Fragment {
 
 
 // Add the new row to the list
-                            if (doc.get("status").toString().equals("à faire")) {
+                           // if (doc.get("status").toString().equals("à faire")) {
                                 timelineRowsList.add(myRow);
                                 // Map the currentTaskId to the position in the list
                                 taskIdsMap.put(timelineRowsList.size() - 1, currentTaskId);
@@ -318,7 +319,7 @@ public class ToDoFragment extends Fragment {
                     // Afficher le compteur dans votre TextView
                     if (numberOfTasksToDO > 0) {
                         counter.setVisibility(View.VISIBLE);
-                        counter.setText("Total Tasks Done : " + numberOfTasksToDO);
+                        counter.setText("Total Tasks To Do : " + numberOfTasksToDO);
                     } else {
                         counter.setVisibility(View.GONE);
                     }

@@ -53,17 +53,17 @@ import java.util.List;
  */
 public class ArchiveFragment extends Fragment {
 
+    public static final int REQUEST_TASK_DETAIL = 1;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    ImageView profile_button;
+    TextView counter;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private ChipNavigationBar chipNavigationBar;
-    ImageView profile_button;
     private ListView myListViewDone;
     private FirebaseAuth firebaseAuth;
     private ArrayList<TimelineRow> timelineRowsListDone;
@@ -72,10 +72,8 @@ public class ArchiveFragment extends Fragment {
     private TimelineViewAdapter myAdapterDone;
     private String currentUserEmail;
     private SparseArray<String> taskIdsMap = new SparseArray<>();
-    TextView counter;
-    private SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
+    private final SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
     private EditText taskSearch;
-    public static final int REQUEST_TASK_DETAIL = 1;
 
     public ArchiveFragment() {
         // Required empty public constructor
@@ -112,11 +110,11 @@ public class ArchiveFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_archive, container, false);
+        View view = inflater.inflate(R.layout.fragment_archive, container, false);
 
         // Get the ListView and Bind it with the Timeline Adapter
-        myListViewDone = (ListView) view.findViewById(R.id.timeline_listViewDone);
-        taskSearch = (EditText) view.findViewById(R.id.goal_search);
+        myListViewDone = view.findViewById(R.id.timeline_listViewDone);
+        taskSearch = view.findViewById(R.id.goal_search);
         counter = view.findViewById(R.id.counter);
 // Initialiser FirebaseAuth
         firebaseAuth = FirebaseAuth.getInstance();
@@ -131,8 +129,6 @@ public class ArchiveFragment extends Fragment {
 
 
 // Create the Timeline Adapter
-
-
 
 
         myListViewDone.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -198,6 +194,7 @@ public class ArchiveFragment extends Fragment {
         });
         return view;
     }
+
     private void loadData() {
         // Vérifier l'authentification de l'utilisateur avant de charger les données
         FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -229,16 +226,17 @@ public class ArchiveFragment extends Fragment {
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
                             // Votre code pour extraire les données et mettre à jour l'interface utilisateur
                             // ...
+                            if (doc.get("status").toString().equals("faite")) {
                             String currentTaskId = doc.getId();
                                     /*com.samar.delivery.models.Task task1 = new com.samar.delivery.models.Task();
                                     task1.setId(doc.getId());
                                     task1.setLibelle(doc.get("name").toString());
                                     task1.setDuree(doc.get("duree").toString());
                                     task1.setStatus((doc.get("status")).toString());*/
-                                //task1.setHeureDateDebutReelle(doc.get("HeureDateDebutReelle").toString());
-                                //task1.setHeureDateFinReelle(doc.get("setHeureDateFinReelle").toString());
+                            //task1.setHeureDateDebutReelle(doc.get("HeureDateDebutReelle").toString());
+                            //task1.setHeureDateFinReelle(doc.get("setHeureDateFinReelle").toString());
 // Create new timeline row (Row Id)
-                                TimelineRow myRow = new TimelineRow(0);
+                            TimelineRow myRow = new TimelineRow(0);
 
 // To set the row Date (optional)
                                /* SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
@@ -249,54 +247,54 @@ public class ArchiveFragment extends Fragment {
                                 } catch (ParseException e) {
                                     throw new RuntimeException(e);
                                 }*/
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                try {
-                                    // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
-                                    String d = doc.get("heureDateDebutPrevu").toString()+":00";
-
-                                    Date date = dateFormat.parse(d);
-                                    // Date dateSymitric = calculateSymmetricDate(date);
-                                    myRow.setDate(date);
-                                    myRow.setDateColor(Color.argb(255, 30, 100, 0));
-                                } catch (ParseException ex) {
-                                    throw new RuntimeException(ex);
-                                }
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                            try {
+                                // String d = doc.get("heureDateDebutPrevu").toString().replaceAll("\"", "");
+                                String d = doc.get("heureFinReelle").toString() + ":00";
+                                Log.d("*******************", " " + d + " " + currentTaskId);
+                                Date date = dateFormat.parse(d);
+                                // Date dateSymitric = calculateSymmetricDate(date);
+                                myRow.setDate(date);
+                                myRow.setDateColor(Color.argb(255, 30, 100, 0));
+                            } catch (ParseException ex) {
+                                throw new RuntimeException(ex);
+                            }
 // To set the row Title (optional)
-                                /*myRow.setDate(new Date());*/
-                                myRow.setTitle(doc.get("name").toString());
+                            /*myRow.setDate(new Date());*/
+                            myRow.setTitle(doc.get("name").toString());
 // To set the row Description (optional)
-                                myRow.setDescription(doc.get("description").toString());
+                            myRow.setDescription(doc.get("description").toString());
 // To set the row bitmap image (optional)
-                                myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
+                            myRow.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.img));
 
 // To set row Below Line Size in dp (optional)
-                                myRow.setBellowLineSize(6);
+                            myRow.setBellowLineSize(6);
 // To set row Image Size in dp (optional)
-                                myRow.setImageSize(30);
+                            myRow.setImageSize(30);
 // To set background color of the row image (optional)
-                                switch (doc.get("priority").toString()) {
-                                    case "basse":
-                                        myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 30, 100, 0));
+                            switch (doc.get("priority").toString()) {
+                                case "basse":
+                                    myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 30, 100, 0));
 
-                                        break;
-                                    case "moyenne":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 165, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 165, 0));
-                                        break;
-                                    case "haute":
-                                        myRow.setBackgroundColor(Color.argb(255, 255, 0, 0));
-                                        // To set row Below Line Color (optional)
-                                        myRow.setBellowLineColor(Color.argb(255, 255, 0, 0));
-                                        break;
-                                    default:
-                                        System.out.println("Priorité non valide");
-                                }
-                                // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
+                                    break;
+                                case "moyenne":
+                                    myRow.setBackgroundColor(Color.argb(255, 255, 165, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 255, 165, 0));
+                                    break;
+                                case "haute":
+                                    myRow.setBackgroundColor(Color.argb(255, 255, 0, 0));
+                                    // To set row Below Line Color (optional)
+                                    myRow.setBellowLineColor(Color.argb(255, 255, 0, 0));
+                                    break;
+                                default:
+                                    System.out.println("Priorité non valide");
+                            }
+                            // myRow.setBackgroundColor(Color.argb(255, 30, 100, 0));
 // To set the Background Size of the row image in dp (optional)
-                                myRow.setBackgroundSize(40);
+                            myRow.setBackgroundSize(40);
 // To set row Date text color (optional)
                             myRow.setDateColor(getResources().getColor(R.color.colorTheme2));
 // To set row Title text color (optional)
@@ -305,12 +303,12 @@ public class ArchiveFragment extends Fragment {
                             myRow.setDescriptionColor(getResources().getColor(R.color.colorTheme2));
 
 // Add the new row to the list
-                                if(doc.get("status").toString().equals("faite")){
-                                    timelineRowsListDone.add(myRow);
-                                    // Map the currentTaskId to the position in the list
-                                    taskIdsMap.put(timelineRowsListDone.size() - 1, currentTaskId);
-                                    numberOfTasksDone++; // Incrémente le compteur pour les tâches faite
-                                }
+                          //  if (doc.get("status").toString().equals("faite")) {
+                                timelineRowsListDone.add(myRow);
+                                // Map the currentTaskId to the position in the list
+                                taskIdsMap.put(timelineRowsListDone.size() - 1, currentTaskId);
+                                numberOfTasksDone++; // Incrémente le compteur pour les tâches faite
+                            }
 
 
 // SparseArray<String> clonedTaskIdsMap = new SparseArray<>();
@@ -323,10 +321,10 @@ public class ArchiveFragment extends Fragment {
                         Log.d("FirestoreListener", "Current data: null");
 
                     }
-                            myAdapterDone = new TimelineViewAdapter(getContext(), 0, timelineRowsListDone,
-                                    //if true, list will be sorted by date
-                                    false);
-                            myListViewDone.setAdapter(myAdapterDone);
+                    myAdapterDone = new TimelineViewAdapter(getContext(), 0, timelineRowsListDone,
+                            //if true, list will be sorted by date
+                            false);
+                    myListViewDone.setAdapter(myAdapterDone);
                     myAdapterDone.notifyDataSetChanged();
                     // Afficher le compteur dans votre TextView
                     if (numberOfTasksDone > 0) {

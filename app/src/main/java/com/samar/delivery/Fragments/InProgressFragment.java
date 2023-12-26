@@ -242,6 +242,7 @@ public class InProgressFragment extends Fragment {
                         tasks = new ArrayList<>();
 
                         for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                            if (doc.get("status").toString().equals("en cours")) {
                             // Votre code pour extraire les données et mettre à jour l'interface utilisateur
                             // ...
                             String currentTaskId = doc.getId();
@@ -310,7 +311,7 @@ public class InProgressFragment extends Fragment {
                             myRow.setDescriptionColor(getResources().getColor(R.color.colorTheme2));
 
 // Add the new row to the list
-                            if (doc.get("status").toString().equals("en cours")) {
+                         //   if (doc.get("status").toString().equals("en cours")) {
                                 timelineRowsList1.add(myRow);
                                 // Map the currentTaskId to the position in the list
                                 taskIdsMap1.put(timelineRowsList1.size() - 1, currentTaskId);

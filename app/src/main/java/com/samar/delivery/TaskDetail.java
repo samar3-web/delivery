@@ -460,7 +460,7 @@ public class TaskDetail extends AppCompatActivity {
                             }
                         });
 
-                    }
+                    } else
                     if (documentSnapshot.get("status").toString().equals("en cours")) {
 
                         postponedBtn.setVisibility(View.VISIBLE);
@@ -502,7 +502,17 @@ public class TaskDetail extends AppCompatActivity {
                         });
                         try {
                         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
-                        Date date = inputFormat.parse(documentSnapshot.get("heureDebutReelle").toString());
+                            Date currentDate = new Date();  // Create a Date object representing the current date and time
+                            String formattedDateCurrent = inputFormat.format(currentDate);
+                            Date date = inputFormat.parse(formattedDateCurrent);
+                        if(!documentSnapshot.get("heureDebutReelle").toString().equals("")){
+                            date = null;
+                         date = inputFormat.parse(documentSnapshot.get("heureDebutReelle").toString());}
+                        /*else {
+                            Date currentDate = new Date();  // Create a Date object representing the current date and time
+                            String formattedDate = inputFormat.format(currentDate);
+                            Date date = inputFormat.parse(formattedDate);
+                        }*/
                         long startTime = date.getTime();
                         // Créer une instance de Calendar et attribuer la date convertie
                         Calendar calendar = Calendar.getInstance();
@@ -588,7 +598,7 @@ public class TaskDetail extends AppCompatActivity {
                     if (documentSnapshot.get("heureDateFinPrevu") != null) {
                         left.setText(documentSnapshot.get("heureDateFinPrevu").toString());
                         if (documentSnapshot.get("status").toString().equals("faite")) {// Récupérer la date depuis Firestore
-                            String dateString = documentSnapshot.get("heureDateFinPrevu").toString();
+                            String dateString = documentSnapshot.get("heureFinReelle").toString();
 
 // Définir le format de la date d'entrée
                             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
@@ -613,7 +623,7 @@ public class TaskDetail extends AppCompatActivity {
                         }
                         task_create = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                     }
-                    if (documentSnapshot.get("heureFinReelle") != null) {
+                    if (documentSnapshot.get("heureDateFinPrevu") != null) {
                         //Edate.setText(documentSnapshot.get("heureFinReelle").toString());
                         EVENT_DATE_TIME = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";
                         task_end = documentSnapshot.get("heureDateFinPrevu").toString() + ":00";

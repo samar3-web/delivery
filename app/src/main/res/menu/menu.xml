@@ -13,11 +13,11 @@
         android:icon="@drawable/ic_baseline_archive_24"
         android:title="Archive"
         app:cnb_iconColor="#FFFFFF"/>
-    <item
+   <!-- <item
         android:id="@+id/nav_new_chat"
         android:icon="@drawable/baseline_chat_24"
         android:title="Chat"
-        app:cnb_iconColor="#FFFFFF"/>
+        app:cnb_iconColor="#FFFFFF"/>-->
     <item
         android:id="@+id/nav_new_notif"
         android:icon="@drawable/baseline_notifications_active_24"

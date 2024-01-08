@@ -272,13 +272,13 @@ public class HomeActivity extends AppCompatActivity {
                                         .replace(R.id.frag_container_nav,
                                                 fragment).commit();
                             break;
-                            case R.id.nav_new_chat:
+                            /*case R.id.nav_new_chat:
                                // fragment = new RankFragment();
                                 fragment = new ChatFragment();
                                 getSupportFragmentManager().beginTransaction()
                                         .replace(R.id.frag_container_nav,
                                                 fragment).commit();
-                                break;
+                                break;*/
                             case R.id.nav_new_notif:
                                 // fragment = new RankFragment();
                                 fragment = new NotificationFragment();

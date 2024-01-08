@@ -336,9 +336,9 @@ public class ArchiveActivity extends AppCompatActivity {
                             case R.id.nav_new_archive:
 
                                 break;
-                            case R.id.nav_new_chat:
+                            /*case R.id.nav_new_chat:
                                 // fragment = new RankFragment();
-                                break;
+                                break;*/
                             case R.id.nav_settings:
                                 // fragment = new SettingsFragment();
                                 break;

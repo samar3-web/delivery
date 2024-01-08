@@ -7,11 +7,11 @@
         android:title="Home" />
 
 
-    <item
+    <!--<item
         android:id="@+id/chat"
         android:enabled="true"
         android:icon="@drawable/baseline_chat_24"
-        android:title="Chat" />
+        android:title="Chat" />-->
 
     <item
         android:id="@+id/notification"

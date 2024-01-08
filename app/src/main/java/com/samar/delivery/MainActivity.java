@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         String themePreference = preferences.getString("theme_preference", "system");
 
 
-        //ajouter les tokens de l'utilsateur de tous les apps installées utilsant son login
-        setUserTokens();
+        /*//ajouter les tokens de l'utilsateur de tous les apps installées utilsant son login
+        setUserTokens();*/
 
 
         if ("system".equals(themePreference)) {
@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
                         // Connexion réussie
                         Log.d("SignInActivity", "signInWithEmailAndPassword:success");
                         FirebaseUser user = firebaseAuth.getCurrentUser();
+                        //ajouter les tokens de l'utilsateur de tous les apps installées utilsant son login
+                        setUserTokens();
                         // Naviguer vers l'écran principal de votre application
                         Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                         startActivity(intent);

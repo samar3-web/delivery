@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,6 +87,8 @@ public class NotificationFragment extends Fragment {
             InAppNotificationCollection.whereEqualTo("assignedUser", user.getEmail()).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot snapshot, @Nullable FirebaseFirestoreException e) {
+                    //adapter = new NotificationAdapter();
+                    adapter.clearNotifications();
                     if (e != null) {
                         Log.w("FirestoreListener", "Listen failed.", e);
                         return;
@@ -94,11 +97,17 @@ public class NotificationFragment extends Fragment {
                         // Le fragment n'est pas attaché à une activité
                         return;
                     }
-                    int numberOfTasksInProgress = 0; // Compteur pour les tâches en cours
                     if (snapshot != null && !snapshot.isEmpty()) {
                           for (DocumentSnapshot doc : snapshot.getDocuments()) {
-                              Notification notification1 = new Notification("The task titled \""+doc.get("taskName").toString()+"\" has been added on", doc.getTimestamp("creationDate").toDate());
-                              adapter.addNotification(notification1);
+                              Log.d("aaaaaaaaaaaaaaaaaaaaaaaa",""+doc.get("taskName").toString());
+                              if(Objects.requireNonNull(doc.get("type")).toString().equals("add")) {
+                                  Notification notification1 = new Notification("The task titled \"" + doc.get("taskName").toString() + "\" has been added on", doc.getTimestamp("creationDate").toDate());
+                                  adapter.addNotification(notification1);
+                              }else{
+                                  Notification notification1 = new Notification("The task titled \"" + doc.get("taskName").toString() + "\" has been edited on", doc.getTimestamp("creationDate").toDate());
+
+                                  adapter.addNotification(notification1);
+                              }
 
 
                         }

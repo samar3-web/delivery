@@ -13,6 +13,8 @@ import com.samar.delivery.models.Notification;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,9 +24,22 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     public void addNotification(Notification notification) {
         notifications.add(notification);
-        notifyItemInserted(notifications.size() - 1);
+        sortNotificationsByDate();
+        notifyItemInserted(notifications.indexOf(notification));
+       // notifyItemInserted(notifications.size() - 1);
     }
-
+    public void clearNotifications() {
+        notifications.clear();
+        notifyDataSetChanged();
+    }
+    private void sortNotificationsByDate() {
+        Collections.sort(notifications, new Comparator<Notification>() {
+            @Override
+            public int compare(Notification notification1, Notification notification2) {
+                return notification2.getNotificationDate().compareTo(notification1.getNotificationDate());
+            }
+        });
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
